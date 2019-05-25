@@ -9,6 +9,6 @@ COPY package.json package.json
 RUN yarn install --frozen-lockfile
 RUN node --version
 
-EXPOSE 3000
+EXPOSE 8080
 
 CMD ["node", "server.js"]
