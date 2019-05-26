@@ -1,1 +1,16 @@
 runtime: nodejs10
+
+handlers:
+  - url: /google473b2f2e206641d6\.html
+    static_files: google473b2f2e206641d6.html
+    upload: google473b2f2e206641d6\.html
+
+  - url: /.*
+    secure: always
+    redirect_http_response_code: 301
+    script: auto
+
+basic_scaling:
+  max_instances: 3
+  idle_timeout: 10m
+  
