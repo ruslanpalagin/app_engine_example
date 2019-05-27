@@ -1,7 +1,7 @@
 const knex = require("../instances/knex");
 
 module.exports = async (ctx) => {
-    await knex('test').insert({id: 100});
-    const ids = await knex.select('*').from('test');
+    await knex('users').insert({email: Math.random()});
+    const ids = await knex.select('*').from('users');
     ctx.body = `IDS: ${ids.length}`;
 };
