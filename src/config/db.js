@@ -5,7 +5,7 @@ const development = {
       host : '34.65.174.239',
       user : 'postgres',
       password : '8pM6oDOgbkyxuMH9',
-      database : 'ecommerce_staging'
+      database : 'dockerdemo_development'
     },
     pool: { min: 1, max: 7 },
     migrations: {
@@ -13,14 +13,14 @@ const development = {
     }
   };
 
-const staging = {
+const production = {
     debug: true,
     client: 'pg',
     connection: {
       host : '/cloudsql/docker-test-241719:europe-west6:instance1',
       user : 'postgres',
       password : '8pM6oDOgbkyxuMH9',
-      database : 'ecommerce_staging'
+      database : 'dockerdemo_production'
     },
     pool: { min: 1, max: 7 },
     migrations: {
@@ -30,7 +30,7 @@ const staging = {
 
 const all = {
     development,
-    staging,
+    production,
 };
 all.currentEnv = all[process.env.ENV || "development"];
 
