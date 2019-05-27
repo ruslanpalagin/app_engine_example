@@ -1,7 +1,7 @@
 const Koa = require('koa');
 const app = new Koa();
 
-const homeAction = require("./src/http/home");
+const homeAction = require("./http/home");
 
 app.use(homeAction);
 

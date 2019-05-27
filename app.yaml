@@ -2,8 +2,6 @@ runtime: nodejs10
 
 beta_settings:
   cloud_sql_instances: instance1
-
-
   
 handlers:
   - url: /google473b2f2e206641d6\.html
