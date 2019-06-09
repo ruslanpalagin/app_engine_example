@@ -6,11 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon node src/server.js",
-    "start": "ENV=production node src/server.js"
+    "start": "./node_modules/foreman/nf.js start"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "foreman": "^3.0.1",
     "knex": "^0.16.5",
     "koa": "^2.7.0",
     "nodemon": "^1.19.1",

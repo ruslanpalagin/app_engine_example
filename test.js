@@ -1,1 +1,1 @@
-console.log(process.env, process.argv);
+onsole.log(process.env, process.argv);
