@@ -1,14 +1,8 @@
-const {PubSub} = require('@google-cloud/pubsub');
+const PubUseCase = require("../useCases/Pub");
 
 class Pub {
   static async execute() {
-    const pubsub = new PubSub();
-
-    const data = JSON.stringify({ foo: 'bar', t: (new Date()).getTime() });
-
-    const dataBuffer = Buffer.from(data);
-
-    const messageId = await pubsub.topic("default").publish(dataBuffer);
+    const messageId = await PubUseCase.execute();
     console.log(`Message ${messageId} published.`);
     process.exit(0);
   }
