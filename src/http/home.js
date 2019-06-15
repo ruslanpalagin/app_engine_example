@@ -1,5 +1,5 @@
 const knex = require("../instances/knex");
-const { exec } = require("../utils");
+const { exec } = require("../utils/utils");
 
 module.exports = async (ctx) => {
     await knex('users').insert({email: Math.random()});
