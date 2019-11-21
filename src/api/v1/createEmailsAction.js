@@ -1,14 +1,20 @@
+const uuidv3 = require('uuid/v3');
 const nodemailer = require('nodemailer');
 const list = require('../../services/list');
 
-const createItem = ({to, subject, html}) => ({
-    to,
-    subject,
-    html,
-    status: "new",
-    created: (new Date()).getTime(),
-    attempts: 0,
-});
+const createItem = ({to, subject, html}) => {
+    const item = {
+        id: null,
+        to,
+        subject,
+        html,
+        status: "new",
+        createdAt: (new Date()).getTime(),
+        attempts: 0,
+    };
+    item.id = uuidv3(JSON.stringify(item), uuidv3.URL);
+    return item;
+};
 
 const processItem = (item) => {
     item.status = "pending";
