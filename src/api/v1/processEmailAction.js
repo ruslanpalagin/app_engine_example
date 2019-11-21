@@ -58,5 +58,7 @@ module.exports = async (ctx) => {
         return;
     }
     processItem(item);
-    ctx.body = `q: ${JSON.stringify(item)}`;
+    ctx.body = {
+        data: item,
+    };
 };

@@ -21,5 +21,7 @@ module.exports = async (ctx) => {
     const { subject, html, receivers } = ctx.request.body.data;
     list.addItems(receivers.map((receiver) => createItem({receiver, subject, html})));
 
-    ctx.body = `q: ${JSON.stringify(list.q)}`;
+    ctx.body = {
+        data: list.q,
+    };
 };

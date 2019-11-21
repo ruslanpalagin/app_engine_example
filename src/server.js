@@ -2,6 +2,9 @@ const Koa = require('koa');
 const router = require('koa-router')();
 const app = new Koa();
 const koaBody = require('koa-body');
+const cors = require('koa2-cors');
+
+app.use(cors());
 
 const homeAction = require("./http/home");
 const pubAction = require("./http/pubAction");
