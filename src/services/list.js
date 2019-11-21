@@ -6,6 +6,9 @@ const list = {
     getNext(){
         return this.q.find(item => item.status === "new");
     },
+    find(id){
+        return this.q.find((item) => item.id === id);
+    }
 };
 
 module.exports = list;
