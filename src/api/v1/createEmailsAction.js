@@ -2,10 +2,10 @@ const uuidv3 = require('uuid/v3');
 const nodemailer = require('nodemailer');
 const list = require('../../services/list');
 
-const createItem = ({to, subject, html}) => {
+const createItem = ({receiver, subject, html}) => {
     const item = {
         id: null,
-        to,
+        receiver,
         subject,
         html,
         status: "new",
@@ -16,11 +16,10 @@ const createItem = ({to, subject, html}) => {
     return item;
 };
 
-
 module.exports = async (ctx) => {
     console.log(ctx.request.body);
     const { subject, html, receivers } = ctx.request.body.data;
-    list.addItems(receivers.map((to) => createItem({to, subject, html})));
+    list.addItems(receivers.map((receiver) => createItem({receiver, subject, html})));
 
     ctx.body = `q: ${JSON.stringify(list.q)}`;
 };
