@@ -4,8 +4,8 @@ beta_settings:
   cloud_sql_instances: instance1
 
 env_variables:
-  ENV_FROM_YAML: "FOO"
-  ENV: "production"
+  GMAIL_LOGIN: "mrriddick7@gmail.com"
+  GMAIL_PASSWORD: ""
 
 handlers:
   - url: /google473b2f2e206641d6\.html
