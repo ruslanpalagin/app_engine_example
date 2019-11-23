@@ -1,8 +1,16 @@
 import React from 'react';
 import http from '../../services/http';
 import './styles.css';
-import { FilePicker } from 'react-file-picker'
+import { FilePicker } from 'react-file-picker';
+import { Input } from 'element-react';
+import { Button } from 'element-react';
+import { Table } from 'element-react';
+import HTMLStringRenderer from '../HTMLStringRenderer';
+
+import 'element-theme-default';
+
 const { convertCSVToArray } = require('convert-csv-to-array');
+
 
 class CampaignNewPage extends React.Component {
     constructor(props){
@@ -11,6 +19,18 @@ class CampaignNewPage extends React.Component {
             emails: [],
             html: "",
             subject: "",
+            columns: [
+                {
+                    label: "Name",
+                    prop: "name",
+                    minWidth: 250,
+                },
+                {
+                    label: "Email",
+                    prop: "email",
+                    minWidth: 250,
+                },
+            ],
         };
     }
 
@@ -53,9 +73,10 @@ class CampaignNewPage extends React.Component {
 
     render() {
         const { emails, html, subject } = this.state;
+
         return (
-            <div>
-                <input
+            <div className="campaignNewPageWrapper">
+                <Input className="subjectInput"
                     type="text"
                     placeholder="subject"
                     value={subject}
@@ -66,9 +87,10 @@ class CampaignNewPage extends React.Component {
                     onChange={this.onCsvChange}
                     onError={errMsg => { console.log("errMsg", errMsg); }}
                 >
-                    <button>
+                    <Button className="uploadButton" type="primary">
+                        <i className="el-icon-upload el-icon-right"></i>
                         Click to upload csv
-                    </button>
+                    </Button>
                 </FilePicker>
 
                 <FilePicker
@@ -76,22 +98,29 @@ class CampaignNewPage extends React.Component {
                     onChange={this.onHtmlChange}
                     onError={errMsg => { console.log("errMsg", errMsg); }}
                 >
-                    <button>
+                    <Button className="uploadButton" type="primary">
+                        <i className="el-icon-upload el-icon-right"></i>
                         Click to upload html
-                    </button>
+                    </Button>
                 </FilePicker>
 
                 <h1>To upload:</h1>
-                <h3>Emails:</h3>
-                <pre>
-                    {JSON.stringify(emails, null, 4)}
-                </pre>
+                <h3>Receivers:</h3>
+                <Table
+                    style={{ width: '80%' }}
+                    columns={this.state.columns}
+                    data={emails}
+                    stripe={true}
+                    /* emptyText fix chinese localization */
+                    emptyText={"queue is empty"}
+                />
                 <h3>HTML template:</h3>
                 <pre>
                     {html}
                 </pre>
+                <HTMLStringRenderer content={html} stylesheets={[]}/>
 
-                <button onClick={this.submit}>SEND</button>
+                <Button type="warning" onClick={this.submit}>SEND</Button>
             </div>
         );
     }
