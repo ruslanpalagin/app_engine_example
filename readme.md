@@ -1,5 +1,6 @@
 # install
-yarn && yarn dev
+yarn
+GMAIL_LOGIN=mrriddick7@gmail.com GMAIL_PASSWORD=xxx yarn dev
 
 
 # misc
