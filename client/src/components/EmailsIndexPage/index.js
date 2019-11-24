@@ -1,7 +1,6 @@
 import React from 'react';
 import http from '../../services/http';
 import './styles.css';
-import { FilePicker } from 'react-file-picker'
 
 class EmailsIndexPage extends React.Component {
     constructor(props){
