@@ -13,8 +13,9 @@ import {
 
 
 class App extends React.Component {
-    onSelect = (data) => {
-        console.log('onSelect', data);
+
+    componentDidMount() {
+        document.title = "The best email sender"
     }
 
     render() {
