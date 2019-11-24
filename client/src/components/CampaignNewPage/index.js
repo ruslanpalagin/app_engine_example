@@ -10,6 +10,18 @@ import 'element-theme-default';
 
 const { convertCSVToArray } = require('convert-csv-to-array');
 
+const receiversTablecolumns = [
+    {
+        label: "Name",
+        prop: "name",
+        minWidth: 250,
+    },
+    {
+        label: "Email",
+        prop: "email",
+        minWidth: 250,
+    },
+];
 
 class CampaignNewPage extends React.Component {
     constructor(props) {
@@ -21,18 +33,6 @@ class CampaignNewPage extends React.Component {
                 subject: "",
             },
             erros: {},
-            receiversTablecolumns: [
-                {
-                    label: "Name",
-                    prop: "name",
-                    minWidth: 250,
-                },
-                {
-                    label: "Email",
-                    prop: "email",
-                    minWidth: 250,
-                },
-            ],
         };
     }
     
@@ -117,7 +117,7 @@ class CampaignNewPage extends React.Component {
                 <h3>Receivers:</h3>
                 <Table
                     style={{ width: '80%' }}
-                    columns={this.state.receiversTablecolumns}
+                    columns={receiversTablecolumns}
                     data={emails}
                     stripe={true}
                     /* emptyText fix chinese localization */
