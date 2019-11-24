@@ -18,6 +18,10 @@ class App extends React.Component {
         document.title = "The best email sender"
     }
 
+    onSelect = (index) => {
+
+    }
+
     render() {
         return (
 
@@ -25,7 +29,7 @@ class App extends React.Component {
                 <Router>
                     <div>
                         <Menu theme="dark" defaultActive="1" className="el-menu-demo" mode="horizontal" onSelect={this.onSelect}>
-                            <Link to="/send_email">
+                            <Link to="/">
                                 <Menu.Item index="1">
                                     Send Email
                                 </Menu.Item>
@@ -39,11 +43,11 @@ class App extends React.Component {
                         </Menu>
 
                         <Switch>
-                            <Route path="/send_email">
-                                <CampaignNewPage />
-                            </Route>
                             <Route path="/email_queue">
                                 <EmailsIndexPage />
+                            </Route>
+                            <Route path="/">
+                                <CampaignNewPage />
                             </Route>
                         </Switch>
                     </div>
