@@ -1,7 +1,6 @@
 import React from 'react';
 import EmailsIndexPage from './components/EmailsIndexPage';
 import CampaignNewPage from './components/CampaignNewPage';
-import Login from './components/Login';
 import './App.css';
 import { Menu } from 'element-react';
 import 'element-theme-default';
@@ -42,8 +41,6 @@ class App extends React.Component {
                                 </Menu.Item>
                             </Link>
                         </Menu>
-
-			<Login />
 
                         <Switch>
                             <Route path="/email_queue">
