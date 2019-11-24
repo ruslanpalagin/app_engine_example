@@ -3,6 +3,7 @@ import React from 'react';
 import EmailsIndexPage from './components/EmailsIndexPage';
 import CampaignNewPage from './components/CampaignNewPage';
 import { GoogleLogin } from 'react-google-login';
+import FacebookLogin from 'react-facebook-login';
 import './App.css';
 
 
@@ -18,10 +19,14 @@ class App extends React.Component {
         console.log("responseGoogle", response);
         this.setState({
             authResponse: response,
-        }, this.test);
+        }, this.testGoogle);
     };
 
-    test = () => {
+    responseFb = (response) => {
+        console.log("responseFb", response);
+    };
+
+    testGoogle = () => {
         const { authResponse } = this.state;
         const headers = {
             Authorization: `Bearer ${authResponse.accessToken}`,
@@ -39,7 +44,13 @@ class App extends React.Component {
                     buttonText="Login"
                     onSuccess={this.responseGoogle}
                     onFailure={this.responseGoogle}
+                    scope="https://www.googleapis.com/auth/gmail.labels"
                 />
+                <FacebookLogin
+                    appId="2518922515097385"
+                    autoLoad={true}
+                    fields="name,email,picture"
+                    callback={this.responseFb} />
                 <CampaignNewPage />
                 {/*<EmailsIndexPage />*/}
             </div>
