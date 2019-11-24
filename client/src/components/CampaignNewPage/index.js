@@ -16,10 +16,13 @@ class CampaignNewPage extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            emails: [],
-            html: "",
-            subject: "",
-            columns: [
+            fields: {
+                emails: [],
+                html: "",
+                subject: "",
+            },
+            erros: {},
+            receiversTablecolumns: [
                 {
                     label: "Name",
                     prop: "name",
@@ -34,6 +37,12 @@ class CampaignNewPage extends React.Component {
         };
     }
 
+    handleFieldChange(field, data) {
+        let fields = this.state.fields;
+        fields[field] = data;
+        this.setState({ fields });
+    }
+
     onCsvChange = (file) => {
         const reader = new FileReader();
         reader.onload = () => {
@@ -42,9 +51,8 @@ class CampaignNewPage extends React.Component {
                 separator: ';', // use the separator you use in your csv (e.g. '\t', ',', ';' ...)
             });
             arrayOfObjects.shift();
-            this.setState(() => ({
-                emails: arrayOfObjects,
-            }));
+
+            this.handleFieldChange("emails", arrayOfObjects)
         };
         reader.readAsText(file);
     };
@@ -53,9 +61,8 @@ class CampaignNewPage extends React.Component {
         const reader = new FileReader();
         reader.onload = () => {
             const html = reader.result;
-            this.setState(() => ({
-                html: html,
-            }));
+
+            this.handleFieldChange("html", html)
         };
         reader.readAsText(file);
     };
@@ -72,7 +79,7 @@ class CampaignNewPage extends React.Component {
     };
 
     render() {
-        const { emails, html, subject } = this.state;
+        const { emails, html, subject } = this.state.fields;
 
         return (
             <div className="campaignNewPageWrapper">
@@ -80,8 +87,9 @@ class CampaignNewPage extends React.Component {
                     type="text"
                     placeholder="subject"
                     value={subject}
-                    onChange={(e) => this.setState({ subject: e.target.value })}
+                    onChange={(e) => {this.handleFieldChange("subject", e)}}
                 />
+
                 <FilePicker
                     extensions={['csv']}
                     onChange={this.onCsvChange}
@@ -108,7 +116,7 @@ class CampaignNewPage extends React.Component {
                 <h3>Receivers:</h3>
                 <Table
                     style={{ width: '80%' }}
-                    columns={this.state.columns}
+                    columns={this.state.receiversTablecolumns}
                     data={emails}
                     stripe={true}
                     /* emptyText fix chinese localization */
