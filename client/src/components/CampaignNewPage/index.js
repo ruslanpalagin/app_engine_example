@@ -112,7 +112,7 @@ class CampaignNewPage extends React.Component {
                     data={emails}
                     stripe={true}
                     /* emptyText fix chinese localization */
-                    emptyText={"queue is empty"}
+                    emptyText={"receivers list is empty"}
                 />
                 <h3>HTML template:</h3>
                 <pre>
