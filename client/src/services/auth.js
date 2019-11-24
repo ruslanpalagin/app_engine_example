@@ -24,7 +24,7 @@ const storage = {
 const auth = {
     apiToken: storage.load("apiToken"),
     googleResponse: storage.load("googleResponse"),
-    authenticate(apiToken, googleResponse) {
+    authenticate(apiToken = null, googleResponse = null) {
         this.apiToken = apiToken;
         this.googleResponse = apiToken ? googleResponse : null;
         storage.save("apiToken", apiToken);

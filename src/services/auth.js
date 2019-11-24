@@ -18,16 +18,19 @@ const auth = {
     isValidApiToken(apiToken){
         return !!this.apiTokens[apiToken];
     },
-    async getApiToken(googleAuthRequest){
-        const { accessToken } = googleAuthRequest;
+    async getTokenInfo(apiToken) {
+        return this.apiTokens[apiToken];
+    },
+    async createApiToken(googleResponse){
+        const { accessToken } = googleResponse;
 
         const isGoogleTokenValid = await getIsGoogleTokenValid({apiKey, accessToken});
         if (!isGoogleTokenValid) {
             return null;
         }
-        const apiToken = uuidv3(JSON.stringify(googleAuthRequest), uuidv3.URL);
+        const apiToken = uuidv3(JSON.stringify(googleResponse), uuidv3.URL);
         this.apiTokens[apiToken] = {
-            googleAuthRequest,
+            googleResponse,
             apiToken,
         };
         return apiToken;
