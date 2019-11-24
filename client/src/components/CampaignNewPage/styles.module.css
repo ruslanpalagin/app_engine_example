@@ -1,0 +1,43 @@
+.subjectInput {
+    width: 60%;
+    margin-top: 30px;
+    /* margin-bottom: 30px; */
+}
+
+.campaignNewPageWrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.el-icon-upload {
+    padding-right: 5px;
+}
+
+.h1Text {
+    margin: 3px;
+    margin-top: 10px;
+}
+
+.h3Text {
+    margin: 3px;
+    margin-top: 10px;
+}
+
+.validationError {
+    padding: 5px;
+    font-size: 12px;
+    color: red;
+    display: block;
+    text-align: center;
+}
+
+.uploadButtonWrapper {
+    margin-top: 20px;
+}
+
+.sendButton {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
