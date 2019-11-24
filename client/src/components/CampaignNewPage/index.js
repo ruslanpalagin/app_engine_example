@@ -1,19 +1,18 @@
 import React from 'react';
 import http from '../../services/http';
 import './styles.css';
-import { FilePicker } from 'react-file-picker';
 import { Input } from 'element-react';
 import { Button } from 'element-react';
 import { Table } from 'element-react';
 import HTMLStringRenderer from '../HTMLStringRenderer';
-
+import ReactFileReader from 'react-file-reader';
 import 'element-theme-default';
 
 const { convertCSVToArray } = require('convert-csv-to-array');
 
 
 class CampaignNewPage extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             fields: {
@@ -36,35 +35,44 @@ class CampaignNewPage extends React.Component {
             ],
         };
     }
-
+    
     handleFieldChange(field, data) {
         let fields = this.state.fields;
         fields[field] = data;
         this.setState({ fields });
     }
+ 
+    handleCsvFiles = (files) => {
+        let emails = [];
+        let letFileCounter = 0;
+        for (let item = 0; item < files.length; item++) {
+            const file = files[item];
+            const reader = new FileReader();
+            reader.onload = () => {
+                const csv = reader.result;
+                const arrayOfObjects = convertCSVToArray(csv, {
+                    separator: ';', // use the separator you use in your csv (e.g. '\t', ',', ';' ...)
+                });
+                arrayOfObjects.shift();
+                emails = emails.concat(arrayOfObjects)
 
-    onCsvChange = (file) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const csv = reader.result;
-            const arrayOfObjects = convertCSVToArray(csv, {
-                separator: ';', // use the separator you use in your csv (e.g. '\t', ',', ';' ...)
-            });
-            arrayOfObjects.shift();
+                letFileCounter++;
+                if (letFileCounter == files.length) {
+                    this.handleFieldChange("emails", emails)
+                }
+            };
+            reader.readAsText(file);
+        }
+    }
 
-            this.handleFieldChange("emails", arrayOfObjects)
-        };
-        reader.readAsText(file);
-    };
-
-    onHtmlChange = (file) => {
+    handleHtmlFiles = (files) => {
         const reader = new FileReader();
         reader.onload = () => {
             const html = reader.result;
 
             this.handleFieldChange("html", html)
         };
-        reader.readAsText(file);
+        reader.readAsText(files[0]);
     };
 
     submit = () => {
@@ -90,27 +98,20 @@ class CampaignNewPage extends React.Component {
                     onChange={(e) => {this.handleFieldChange("subject", e)}}
                 />
 
-                <FilePicker
-                    extensions={['csv']}
-                    onChange={this.onCsvChange}
-                    onError={errMsg => { console.log("errMsg", errMsg); }}
-                >
+                <ReactFileReader handleFiles={this.handleCsvFiles} fileTypes={'.csv'} multipleFiles={true}>
                     <Button className="uploadButton" type="primary">
                         <i className="el-icon-upload el-icon-right"></i>
                         Click to upload csv
                     </Button>
-                </FilePicker>
+                </ReactFileReader>
 
-                <FilePicker
-                    extensions={['html']}
-                    onChange={this.onHtmlChange}
-                    onError={errMsg => { console.log("errMsg", errMsg); }}
-                >
+
+                <ReactFileReader handleFiles={this.handleHtmlFiles} fileTypes={'.html'}>
                     <Button className="uploadButton" type="primary">
                         <i className="el-icon-upload el-icon-right"></i>
                         Click to upload html
                     </Button>
-                </FilePicker>
+                </ReactFileReader>
 
                 <h1>To upload:</h1>
                 <h3>Receivers:</h3>
