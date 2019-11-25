@@ -21,7 +21,7 @@ const auth = {
     async getTokenInfo(apiToken) {
         return this.apiTokens[apiToken];
     },
-    async createApiToken(googleResponse){
+    async createApiTokenold(googleResponse){
         const { accessToken } = googleResponse;
 
         const isGoogleTokenValid = await getIsGoogleTokenValid({apiKey, accessToken});
@@ -34,6 +34,20 @@ const auth = {
             apiToken,
         };
         return apiToken;
+    },
+    async createApiToken(accessToken){
+        let isGoogleTokenValid;
+
+        try {
+            isGoogleTokenValid = await getIsGoogleTokenValid({apiKey, accessToken});
+        } catch (e) {
+            console.log("error", e);
+            return null;
+        }
+        if (!isGoogleTokenValid) {
+            return null;
+        }
+        return uuidv3(JSON.stringify(accessToken) + "" + Math.random(), uuidv3.URL);
     },
 };
 

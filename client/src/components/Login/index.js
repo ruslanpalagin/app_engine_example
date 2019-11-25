@@ -19,6 +19,7 @@ class Login extends React.Component {
     }
 
     responseGoogle = (googleResponse) => {
+        console.log("googleResponse", googleResponse);
         http.post("/api/v1/tokens/", {
             data: googleResponse
         }).then((response) => {
