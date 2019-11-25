@@ -5,39 +5,40 @@ import { Table } from 'element-react';
 import 'element-theme-default';
 
 
+const tableColumns = [
+    {
+        label: "Status",
+        prop: "status",
+        width: 90
+    },
+    {
+        label: "Name",
+        prop: "name",
+        width: 200
+    },
+    {
+        label: "Email",
+        prop: "email",
+        width: 280
+    },
+    {
+        label: "Subject",
+        prop: "subject",
+        minWidth: 280
+    },
+    {
+        label: "Creation date",
+        prop: "creationDate",
+        width: 210
+    },
+];
+
 class EmailsIndexPage extends React.Component {
     constructor(props){
         super(props);
         
         this.state = {
             emails: [],
-            columns: [
-                {
-                    label: "Status",
-                    prop: "status",
-                    width: 90
-                },
-                {
-                    label: "Name",
-                    prop: "name",
-                    width: 200
-                },
-                {
-                    label: "Email",
-                    prop: "email",
-                    width: 280
-                },
-                {
-                    label: "Subject",
-                    prop: "subject",
-                    minWidth: 280
-                },
-                {
-                    label: "Creation date",
-                    prop: "creationDate",
-                    width: 210
-                },
-            ],
         }
     }
     
@@ -75,7 +76,7 @@ class EmailsIndexPage extends React.Component {
 
                 <Table
                     style={{ width: '100%' }}
-                    columns={this.state.columns}
+                    columns={tableColumns}
                     data={emailsQueueTableData}
                     stripe={true}
                     /* emptyText fix chinese localization */

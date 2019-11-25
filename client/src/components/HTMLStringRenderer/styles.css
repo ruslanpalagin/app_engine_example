@@ -1,3 +1,6 @@
 .iframeForHTML {
+    width: 80%;
+    height: 500px;
+
     border: 0.1rem solid #ccc;
 }
