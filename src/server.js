@@ -9,19 +9,22 @@ app.use(cors());
 
 const homeAction = require("./http/home");
 const pubAction = require("./http/pubAction");
-const createEmailsAction = require("./api/v1/createEmailsAction");
-const getEmailsAction = require("./api/v1/getEmailsAction");
-const processEmailAction = require("./api/v1/processEmailAction");
+// const createEmailsAction = require("./api/v1/createEmailsAction");
+// const getEmailsAction = require("./api/v1/getEmailsAction");
+// const processEmailAction = require("./api/v1/processEmailAction");
+const getEmailsAction = require("./api/v1/emails/getEmailsAction");
 const createTokenAction = require("./api/v1/tokens/createTokenAction");
 const getMeAction = require("./api/v1/users/getMeAction");
+const createCampaignAction = require("./api/v1/campaigns/createCampaignAction");
 
 router.get("/", homeAction);
 router.get("/pub", pubAction);
-router.post("/api/v1/emails", koaBody(), createEmailsAction);
-router.get("/api/v1/emails", koaBody(), withAuth(), getEmailsAction);
-router.post("/api/v1/emails/:id/process", koaBody(), processEmailAction);
+// router.post("/api/v1/emails", koaBody(), createEmailsAction);
+router.get("/api/v1/emails", getEmailsAction);
+// router.post("/api/v1/emails/:id/process", koaBody(), processEmailAction);
 router.post("/api/v1/tokens", koaBody(), createTokenAction);
 router.get("/api/v1/users/me", getMeAction);
+router.post("/api/v1/campaigns", koaBody(), createCampaignAction);
 
 app.use(router.routes());
 app.listen(8080);
