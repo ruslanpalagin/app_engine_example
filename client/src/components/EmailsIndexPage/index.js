@@ -1,6 +1,6 @@
 import React from 'react';
 import http from '../../services/http';
-import './styles.css';
+import styles from './styles.module.css'; // Import css modules stylesheet as styles
 import { Table } from 'element-react';
 import 'element-theme-default';
 
@@ -24,7 +24,7 @@ const tableColumns = [
     {
         label: "Subject",
         prop: "subject",
-        minWidth: 280
+        minWidth: 280,
     },
     {
         label: "Creation date",
@@ -72,7 +72,7 @@ class EmailsIndexPage extends React.Component {
 
         return (
             <div type="primary">
-                <h1 className="queue-tittle">Emails in a queue:</h1>
+                <h1 className={styles.queueTittle}>Emails in a queue:</h1>
 
                 <Table
                     style={{ width: '100%' }}

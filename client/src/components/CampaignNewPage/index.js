@@ -1,11 +1,11 @@
 import React from 'react';
 import http from '../../services/http';
-// import './styles.css';
 import styles from './styles.module.css'; // Import css modules stylesheet as styles
 import { Input } from 'element-react';
 import { Button } from 'element-react';
 import { Table } from 'element-react';
 import { Message } from 'element-react';
+import { MessageBox } from 'element-react';
 import HTMLStringRenderer from '../HTMLStringRenderer';
 import ReactFileReader from 'react-file-reader';
 import 'element-theme-default';
@@ -23,6 +23,16 @@ const receiversTablecolumns = [
         prop: "email",
         minWidth: 250,
     },
+    {
+        label: "",
+        render: function () {
+            return (
+                <span>
+                    <Button plain={true} type="info" size="small">Test Email</Button>
+                </span>
+            )
+        }
+    }
 ];
 
 const fieldsValidationRules = {
@@ -36,6 +46,8 @@ const fieldsValidationRules = {
         required: 'please add email subject',
     },
 };
+
+const messageDuration = 4000;
 
 class CampaignNewPage extends React.Component {
     constructor(props) {
@@ -51,20 +63,27 @@ class CampaignNewPage extends React.Component {
     }
     
     setFieldData(field, data) {
-        let fields = this.state.fields;
-        fields[field] = data;
-        this.setState({ fields });
+        this.setState((prevState, props) => {
+            const fields = prevState.fields;
+            fields[field] = data;
+            
+            return { fields };
+        });
     }
 
     setFieldError(field, error) {
-        let errors = this.state.errors;
-        errors[field] = error;
-        this.setState({ errors });
+        this.setState((prevState, props) => {
+            const errors = prevState.errors;
+            errors[field] = error;
+
+            return { errors };
+        });
 
         if (error !== '') {    
             Message({
                 message: error,
-                type: 'error'
+                type: 'error',
+                duration: messageDuration,
             });
         }
     }
@@ -197,18 +216,67 @@ class CampaignNewPage extends React.Component {
                 this.clearFields();
                 Message({
                     message: 'Emails have been added to the queue',
-                    type: 'success'
+                    type: 'success',
+                    duration: messageDuration,
                 });
             })
             .catch((error) => {
                 console.log(error);
                 Message({
                     message: 'Fail to add emails to the queue',
-                    type: 'error'
+                    type: 'error',
+                    duration: messageDuration,
                 });
             });
         }
-    };
+    }
+
+    handleTestEmail = (item) => {
+        const { name } = item;
+
+        if (this.validateFields()) {
+            MessageBox.prompt('Please input test destination e-mail', 'Test email', {
+                confirmButtonText: 'OK',
+                cancelButtonText: 'Cancel',
+                inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                inputErrorMessage: 'Invalid Email'
+            }).then(({ value }) => {
+                this.postTestEmail(value, name)
+            }).catch(() => {
+                Message({
+                    type: 'info',
+                    message: 'Input canceled'
+                });
+            });
+        }
+    }
+
+    postTestEmail = (destinationEmail, receiverName) => {
+        const { html, subject } = this.state.fields;
+
+        http.post("/api/v1/testemail", {
+            data: {
+                receiver: destinationEmail,
+                html,
+                subject,
+            }
+        })
+        .then((response) => {
+            Message({
+                message: `Test email have been send to\r\n${destinationEmail}`,
+                type: 'success',
+                duration: messageDuration,
+            });
+        })
+        .catch((error) => {
+            console.log(error);
+            Message({
+                message: 'Fail to send test email',
+                type: 'error',
+                duration: messageDuration,
+            });
+        });
+    }
 
     render() {
         const { emails, html, subject } = this.state.fields;
@@ -247,12 +315,13 @@ class CampaignNewPage extends React.Component {
                 <h3 className={styles.h3Text}>Receivers:</h3>
                 <Table
                     style={{ width: '80%' }}
-                    height={250}
+                    maxHeight={250}
                     columns={receiversTablecolumns}
                     data={emails}
                     stripe={true}
                     /* emptyText fix chinese localization */
                     emptyText={"receivers list is empty"}
+                    onCurrentChange={this.handleTestEmail}
                 />
 
                 <h3 className={styles.h3Text}>HTML template:</h3>
