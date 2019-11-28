@@ -43,11 +43,12 @@ class EmailsIndexPage extends React.Component {
     }
     
     refresh = () => {
-        http.get("/api/v1/emails").then((response) => {
+        http.get("/api/v1/emails")
+        .then((response) => {
             this.setState(() => ({
                 emails: response.data.data,
             }));
-        });
+        })
     };
 
     componentDidMount() {

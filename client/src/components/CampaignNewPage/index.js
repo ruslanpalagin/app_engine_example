@@ -36,7 +36,7 @@ const receiversTablecolumns = [
 ];
 
 const fieldsValidationRules = {
-    emails: {
+    contactsData: {
         required: 'please upload csv file', 
     },
     html: {
@@ -54,7 +54,7 @@ class CampaignNewPage extends React.Component {
         super(props);
         this.state = {
             fields: {
-                emails: [],
+                contactsData: [],
                 html: "",
                 subject: "",
             },
@@ -149,7 +149,7 @@ class CampaignNewPage extends React.Component {
             status = false;
         }
         
-        if ( ! this.validateEmailsField('emails', this.state.fields.emails)) {
+        if (!this.validateEmailsField('contactsData', this.state.fields.contactsData)) {
             status = false;
         } 
         
@@ -161,7 +161,7 @@ class CampaignNewPage extends React.Component {
     }
 
     handleCsvFiles = (files) => {
-        let emails = [];
+        let contactsData = [];
         let letFileCounter = 0;
         for (let item = 0; item < files.length; item++) {
             const file = files[item];
@@ -172,12 +172,12 @@ class CampaignNewPage extends React.Component {
                     separator: ',', // use the separator you use in your csv (e.g. '\t', ',', ';' ...)
                 });
                 arrayOfObjects.shift();
-                emails = emails.concat(arrayOfObjects)
+                contactsData = contactsData.concat(arrayOfObjects)
 
                 letFileCounter++;
                 if (letFileCounter == files.length) {
-                    this.setFieldData("emails", emails);
-                    this.validateEmailsField("emails", this.state.fields.emails);
+                    this.setFieldData("contactsData", contactsData);
+                    this.validateEmailsField("contactsData", this.state.fields.contactsData);
                 }
             };
             reader.readAsText(file);
@@ -197,17 +197,17 @@ class CampaignNewPage extends React.Component {
 
     clearFields = () => {
         this.setFieldData("subject", '');
-        this.setFieldData("emails", []);
+        this.setFieldData("contactsData", []);
         this.setFieldData("html", '');
     }
 
     submit = () => {
-        const { html, emails, subject } = this.state.fields;
+        const { html, contactsData, subject } = this.state.fields;
 
         if (this.validateFields()) {
             http.post("/api/v1/emails", {
                 data: {
-                    receivers: emails,
+                    receivers: contactsData,
                     html,
                     subject,
                 }
@@ -232,8 +232,6 @@ class CampaignNewPage extends React.Component {
     }
 
     handleTestEmail = (item) => {
-        const { name } = item;
-
         if (this.validateFields()) {
             MessageBox.prompt('Please input destination e-mail', 'Test email', {
                 confirmButtonText: 'Send',
@@ -241,7 +239,7 @@ class CampaignNewPage extends React.Component {
                 inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
                 inputErrorMessage: 'Invalid Email'
             }).then(({ value }) => {
-                this.postTestEmail(value, name)
+                this.postTestEmail(value, item)
             }).catch(() => {
                 Message({
                     type: 'info',
@@ -251,12 +249,13 @@ class CampaignNewPage extends React.Component {
         }
     }
 
-    postTestEmail = (destinationEmail, receiverName) => {
+    postTestEmail = (destinationEmail, contactData) => {
         const { html, subject } = this.state.fields;
 
         http.post("/api/v1/testemail", {
             data: {
                 receiver: destinationEmail,
+                contactdata: contactData,
                 html,
                 subject,
             }
@@ -279,7 +278,7 @@ class CampaignNewPage extends React.Component {
     }
 
     render() {
-        const { emails, html, subject } = this.state.fields;
+        const { contactsData, html, subject } = this.state.fields;
         return (
             <div className={styles.campaignNewPageWrapper}>
                 <Input className={styles.subjectInput}
@@ -298,7 +297,7 @@ class CampaignNewPage extends React.Component {
                             Click to upload csv
                         </Button>
                     </ReactFileReader>
-                    <span className={styles.validationError}>{this.state.errors["emails"]}</span>
+                    <span className={styles.validationError}>{this.state.errors["contactsData"]}</span>
                 </div>
                 
                 <div className={styles.uploadButtonWrapper}>
@@ -317,7 +316,7 @@ class CampaignNewPage extends React.Component {
                     style={{ width: '80%' }}
                     maxHeight={250}
                     columns={receiversTablecolumns}
-                    data={emails}
+                    data={contactsData}
                     stripe={true}
                     /* emptyText fix chinese localization */
                     emptyText={"receivers list is empty"}
