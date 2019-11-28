@@ -235,8 +235,8 @@ class CampaignNewPage extends React.Component {
         const { name } = item;
 
         if (this.validateFields()) {
-            MessageBox.prompt('Please input test destination e-mail', 'Test email', {
-                confirmButtonText: 'OK',
+            MessageBox.prompt('Please input destination e-mail', 'Test email', {
+                confirmButtonText: 'Send',
                 cancelButtonText: 'Cancel',
                 inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
                 inputErrorMessage: 'Invalid Email'
