@@ -4,6 +4,7 @@ const app = new Koa();
 const koaBody = require('koa-body');
 const cors = require('koa2-cors');
 const withAuth = require('./services/withAuth');
+const emailRequestProcessor = require('./services/emailRequestProcessor');
 
 app.use(cors());
 
@@ -25,3 +26,5 @@ router.post("/api/v1/campaigns", withAuth(), koaBody(), createCampaignAction);
 
 app.use(router.routes());
 app.listen(8080);
+
+emailRequestProcessor.on();
