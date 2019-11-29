@@ -9,7 +9,6 @@ const createItem = (receiver, prototype) => {
 };
 
 module.exports = async (ctx) => {
-    // console.log(ctx.request.body);
     const campaign = ctx.request.body.data;
     const { receivers } = campaign;
     const items = receivers.map((receiver) => createItem(receiver, campaign.prototype));

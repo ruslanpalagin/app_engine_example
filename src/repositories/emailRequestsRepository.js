@@ -6,6 +6,7 @@ const emailRequestsRepository = {
         return resources.length ? resources[0] : null;
     },
     async update({id}, data) {
+        delete data.id;
         return knex('emailRequests')
             .where({ id })
             .update(data);
