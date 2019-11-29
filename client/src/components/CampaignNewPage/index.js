@@ -117,7 +117,7 @@ class CampaignNewPage extends React.Component {
         this.validateField('subject', e.target.value)
     }
 
-    validateEmailsField = (field, value) => {
+    validatContactsDataField = (field, value) => {
         let status = true;
         
         const rules = fieldsValidationRules[field];
@@ -149,7 +149,7 @@ class CampaignNewPage extends React.Component {
             status = false;
         }
         
-        if (!this.validateEmailsField('contactsData', this.state.fields.contactsData)) {
+        if (!this.validatContactsDataField('contactsData', this.state.fields.contactsData)) {
             status = false;
         } 
         
@@ -177,7 +177,7 @@ class CampaignNewPage extends React.Component {
                 letFileCounter++;
                 if (letFileCounter == files.length) {
                     this.setFieldData("contactsData", contactsData);
-                    this.validateEmailsField("contactsData", this.state.fields.contactsData);
+                    this.validatContactsDataField("contactsData", this.state.fields.contactsData);
                 }
             };
             reader.readAsText(file);
