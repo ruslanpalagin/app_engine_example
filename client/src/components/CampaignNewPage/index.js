@@ -185,12 +185,21 @@ class CampaignNewPage extends React.Component {
     submit = () => {
         const { html, emails, subject } = this.state.fields;
 
+        const receivers = emails.map((email) => ({
+            email: email.email,
+            props: email,
+        }));
         if (this.validateFields()) {
-            http.post("/api/v1/emails", {
+            http.post("/api/v1/campaigns", {
                 data: {
-                    receivers: emails,
-                    html,
-                    subject,
+                    receivers,
+                    prototype: {
+                        html,
+                        subject,
+                        status: "new",
+                        smtpLogin: "mrriddick7@gmail.com",
+                        smtpPassword: "xxx",
+                    },
                 }
             })
             .then((response) => {
