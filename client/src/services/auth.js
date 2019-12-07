@@ -1,6 +1,6 @@
 const storage = {
     key(name) {
-        return `auth.v0.1.${name}`;
+        return `auth.v0.2.${name}`;
     },
     save(name, value) {
         localStorage.setItem(this.key(name), JSON.stringify(value));
@@ -23,15 +23,15 @@ const storage = {
 
 const auth = {
     apiToken: storage.load("apiToken"),
-    googleResponse: storage.load("googleResponse"),
-    authenticate(apiToken = null, googleResponse = null) {
+    user: storage.load("user"),
+    authenticate(apiToken = null, user = null) {
         this.apiToken = apiToken;
-        this.googleResponse = apiToken ? googleResponse : null;
+        this.user = apiToken ? user : null;
         storage.save("apiToken", apiToken);
-        storage.save("googleResponse", googleResponse);
+        storage.save("user", user);
     },
     getUser() {
-        return this.googleResponse;
+        return this.user;
     },
     isAuthenticated() {
         return !!this.apiToken;
@@ -41,9 +41,9 @@ const auth = {
     },
     logout() {
         this.apiToken = null;
-        this.googleResponse = null;
+        this.user = null;
         storage.save("apiToken", null);
-        storage.save("googleResponse", null);
+        storage.save("user", null);
     },
 };
 
