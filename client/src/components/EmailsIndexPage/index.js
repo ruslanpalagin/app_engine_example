@@ -58,17 +58,13 @@ class EmailsIndexPage extends React.Component {
     render() {
         const { emails } = this.state;
 
-        const emailsQueueTableData = [];
-
-        emails.forEach((email)=> {
-            emailsQueueTableData.push({
-                status: email.status,
-                name: email.receiver.name,
-                email: email.receiver.email,
-                subject: email.subject,
-                creationDate: new Date(email.createdAt).toISOString(),
-            });
-        });
+        const emailsQueueTableData = emails.map((email)=> ({
+            status: email.status,
+            name: email.props.name,
+            email: email.email,
+            subject: email.subject,
+            creationDate: email.created_at ? new Date(email.created_at).toISOString() : "-",
+        }));
 
         return (
             <div type="primary">
