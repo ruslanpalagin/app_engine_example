@@ -11,21 +11,35 @@ class Login extends React.Component {
     }
 
     componentDidMount() {
-        http.get("/api/v1/tokens/my").then((response) => {
-            const data = response.data.data || {};
-            auth.authenticate(data.apiToken, data.googleResponse);
-            this.forceUpdate();
-        });
+        this.fetchCurrentUser();
     }
 
+    fetchCurrentUser = () => {
+        return http.get("/api/v1/users/me")
+            .then((response) => {
+                const user = response.data.data || {};
+                auth.authenticate(user.apiToken, user);
+            })
+            .catch(() => {
+                auth.logout();
+            })
+            .finally(() => {
+                this.forceUpdate();
+            });
+    };
+
     responseGoogle = (googleResponse) => {
-        http.post("/api/v1/tokens/", {
-            data: googleResponse
-        }).then((response) => {
-            console.log("response", response);
-            auth.authenticate(response.data.data.apiToken, googleResponse);
-            this.forceUpdate();
-        });
+        console.log("googleResponse", googleResponse);
+        http
+            .post("/api/v1/tokens/", {
+                data: googleResponse
+            })
+            .then((response) => {
+                console.log("response", response);
+                auth.authenticate(response.data.data.apiToken, null);
+                return this.fetchCurrentUser();
+            })
+            .catch(() => alert("Error during fetching current user from the server"));
     };
 
     logout = () => {
@@ -40,7 +54,7 @@ class Login extends React.Component {
                     auth.getUser()
                         ?
                         <span>
-                            Hello, ${auth.getUser().profileObj.name}
+                            Hello, ${auth.getUser().name}
                             <button onClick={this.logout}>Logout</button>
                         </span>
                         :
