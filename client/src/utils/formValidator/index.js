@@ -105,6 +105,12 @@ const formValidator = {
         }
         return false;
     },
+
+    getTouchedFromSchema(schema) {
+        const touched = {...schema};
+        Object.keys(touched).forEach(key => touched[key] = true);
+        return touched;
+    },
 };
 
 export default formValidator;
