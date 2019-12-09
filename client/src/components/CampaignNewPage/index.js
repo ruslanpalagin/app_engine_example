@@ -1,5 +1,6 @@
 import React from 'react';
 import http from '../../services/http';
+import formValidator from '../../utils/formValidator';
 // import './styles.css';
 import styles from './styles.module.css'; // Import css modules stylesheet as styles
 import { Input } from 'element-react';
@@ -25,123 +26,53 @@ const receiversTablecolumns = [
     },
 ];
 
-const fieldsValidationRules = {
-    emails: {
-        required: 'please upload csv file', 
+const campaignFactory = {
+    create() {
+        return {
+            emails: [],
+            html: "",
+            subject: "",
+        };
     },
-    html: {
-        required: 'please upload html file',
-    },
-    subject: {
-        required: 'please add email subject',
-    },
+};
+
+const campaignSchema = {
+    emails: ["arrayLength:1"],
+    html: ["required"],
+    subject: ["required"],
 };
 
 class CampaignNewPage extends React.Component {
     constructor(props) {
         super(props);
+        const fields = campaignFactory.create();
+        const { errors } = formValidator.isValid(fields, campaignSchema);
         this.state = {
-            fields: {
-                emails: [],
-                html: "",
-                subject: "",
-            },
-            errors: {},
+            fields,
+            errors,
+            touched: {},
         };
     }
-    
-    setFieldData(field, data) {
-        let fields = this.state.fields;
-        fields[field] = data;
-        this.setState({ fields });
-    }
 
-    setFieldError(field, error) {
-        let errors = this.state.errors;
-        errors[field] = error;
-        this.setState({ errors });
+    setField = (name, value) => {
+        this.setState((state) => {
+            const fields = {...state.fields, [name]: value};
+            const { errors } = formValidator.isValid(fields, campaignSchema);
+            return {
+                fields,
+                errors,
+            };
+        });
+    };
 
-        if (error !== '') {    
-            Message({
-                message: error,
-                type: 'error'
-            });
-        }
-    }
- 
-    validateField = (field, value) => {
-        let status = true;
+    onTouch = (name) => {
+        this.setState((state) => {
+            const touched = {...state.touched, [name]: true};
+            return { touched };
+        });
+    };
 
-        const rules = fieldsValidationRules[field];
-        for (let rule in rules) {
-            if (rule === 'required') {
-                if (value == '') {
-                    this.setFieldError(field, rules[rule]);
-                    status = false;
-                    break;
-                }
-            }
-        }
-        
-        if (status) {
-            this.setFieldError(field, '');
-        }
-
-        return status;
-    }
-
-    handleSubjectChange = (value) => {
-        this.setFieldData("subject", value);
-    }
-
-    handleSubjectBlur = (e) => {
-        this.validateField('subject', e.target.value)
-    }
-
-    validateEmailsField = (field, value) => {
-        let status = true;
-        
-        const rules = fieldsValidationRules[field];
-        for (let rule in rules) {
-            if (rule === 'required') {
-                if (value.length <= 0) {
-                    this.setFieldError(field, rules[rule]);
-                    status = false;
-                    break;
-                }
-            }
-        }
-
-        if (status) {
-            this.setFieldError(field, '');
-        }
-
-        return status;
-    }
-
-    validateHtmlField = (field, value) => {
-        return this.validateField(field, value);
-    }
-
-    validateFields = () => {
-        let status = true;
-        
-        if ( ! this.validateField('subject', this.state.fields.subject)) {
-            status = false;
-        }
-        
-        if ( ! this.validateEmailsField('emails', this.state.fields.emails)) {
-            status = false;
-        } 
-        
-        if ( ! this.validateHtmlField('html', this.state.fields.html)) {
-            status = false;
-        }
-
-        return status;
-    }
-
-    handleCsvFiles = (files) => {
+    onCsvChange = (files) => {
         let emails = [];
         let letFileCounter = 0;
         for (let item = 0; item < files.length; item++) {
@@ -156,52 +87,70 @@ class CampaignNewPage extends React.Component {
                 emails = emails.concat(arrayOfObjects)
 
                 letFileCounter++;
-                if (letFileCounter == files.length) {
-                    this.setFieldData("emails", emails);
-                    this.validateEmailsField("emails", this.state.fields.emails);
+                if (letFileCounter === files.length) {
+                    this.setField("emails", emails);
+                    this.onTouch("emails");
                 }
             };
             reader.readAsText(file);
         }
     }
 
-    handleHtmlFiles = (files) => {
+    onHtmlChange = (files) => {
         const reader = new FileReader();
         reader.onload = () => {
-            const html = reader.result;
-
-            this.setFieldData("html", html)
-            this.validateHtmlField("html", this.state.fields.html)
+            this.setField("html", reader.result);
+            this.onTouch("html");
         };
         reader.readAsText(files[0]);
     };
 
     clearFields = () => {
-        this.setFieldData("subject", '');
-        this.setFieldData("emails", []);
-        this.setFieldData("html", '');
-    }
+        this.setState(() => {
+            const fields = campaignFactory.create();
+            const { errors } = formValidator.isValid(fields, campaignSchema);
+            return {
+                fields,
+                errors,
+                touched: {},
+            };
+        });
+    };
+
+    canSubmit = () => {
+        const { errors } = this.state;
+        return !formValidator.isObjectHasErrors(errors);
+    };
+
+    touchAllFields = () => {
+        this.setState(() => ({
+            touched: formValidator.getTouchedFromSchema(campaignSchema)
+        }));
+    };
 
     submit = () => {
         const { html, emails, subject } = this.state.fields;
 
+        if (!this.canSubmit()) {
+            this.touchAllFields();
+            return;
+        }
         const receivers = emails.map((email) => ({
             email: email.email,
             props: email,
         }));
-        if (this.validateFields()) {
-            http.post("/api/v1/campaigns", {
-                data: {
-                    receivers,
-                    prototype: {
-                        html,
-                        subject,
-                        status: "new",
-                        smtpLogin: "mrriddick7@gmail.com",
-                        smtpPassword: "xxx",
-                    },
-                }
-            })
+        http.post("/api/v1/campaigns", {
+            data: {
+                receivers,
+                prototype: {
+                    html,
+                    subject,
+                    status: "new",
+                    smtpLogin: "mrriddick7@gmail.com",
+                    smtpPassword: "xxx",
+                },
+            }
+        })
             .then((response) => {
                 this.clearFields();
                 Message({
@@ -216,40 +165,50 @@ class CampaignNewPage extends React.Component {
                     type: 'error'
                 });
             });
-        }
     };
 
     render() {
+        const { errors, touched } = this.state;
         const { emails, html, subject } = this.state.fields;
         return (
             <div className={styles.campaignNewPageWrapper}>
+                {JSON.stringify(errors)}
                 <Input className={styles.subjectInput}
-                    type="text"
-                    placeholder="subject"
-                    value={subject}
-                    onChange={this.handleSubjectChange}
-                    onBlur={this.handleSubjectBlur}
+                       type="text"
+                       placeholder="subject"
+                       value={subject}
+                       onChange={(value) => this.setField("subject", value)}
+                       onBlur={() => this.onTouch("subject")}
                 />
-                <span className={styles.validationError}>{this.state.errors["subject"]}</span>
+                {
+                    touched.subject && errors.subject &&
+                    <span className={styles.validationError}>{errors.subject}</span>
+                }
 
                 <div className={styles.uploadButtonWrapper}>
-                    <ReactFileReader handleFiles={this.handleCsvFiles} fileTypes={'.csv'} multipleFiles={true}>
+                    <ReactFileReader handleFiles={this.onCsvChange} fileTypes={'.csv'} multipleFiles={true}>
                         <Button className="uploadButton" type="primary">
                             <i className={['el-icon-upload', 'el-icon-right', styles['el-icon-upload']].join(' ')}></i>
                             Click to upload csv
                         </Button>
                     </ReactFileReader>
-                    <span className={styles.validationError}>{this.state.errors["emails"]}</span>
+                    {
+                        touched.emails && errors.emails &&
+                        <span className={styles.validationError}>{errors.emails}</span>
+                    }
                 </div>
-                
+
                 <div className={styles.uploadButtonWrapper}>
-                    <ReactFileReader handleFiles={this.handleHtmlFiles} fileTypes={'.html'}>
+                    <ReactFileReader handleFiles={this.onHtmlChange} fileTypes={'.html'}>
                         <Button className="uploadButton" type="primary">
                             <i className={['el-icon-upload', 'el-icon-right', styles['el-icon-upload']].join(' ')}></i>
                             Click to upload html
                         </Button>
                     </ReactFileReader>
-                    <span className={styles.validationError}>{this.state.errors["html"]}</span>
+                    {
+                        touched.html && errors.html &&
+                        <span className={styles.validationError}>{errors.html}</span>
+                    }
                 </div>
 
                 <h1 className={styles.h1Text}>To upload:</h1>
@@ -270,8 +229,8 @@ class CampaignNewPage extends React.Component {
                     {html}
                 </pre> */}
                 <HTMLStringRenderer content={html} stylesheets={[]}/>
-                
-                <Button className={styles.sendButton} type="warning" onClick={this.submit}>SEND</Button>
+
+                <Button className={`${styles.sendButton} ${this.canSubmit() ? "" : styles.sendButtonDisabled}`} type="warning" onClick={this.submit}>SEND</Button>
             </div>
         );
     }
