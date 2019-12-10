@@ -1,12 +1,12 @@
 import React from 'react';
 import http from '../../services/http';
 import formValidator from '../../utils/formValidator';
-// import './styles.css';
 import styles from './styles.module.css'; // Import css modules stylesheet as styles
 import { Input } from 'element-react';
 import { Button } from 'element-react';
 import { Table } from 'element-react';
 import { Message } from 'element-react';
+import { MessageBox } from 'element-react';
 import HTMLStringRenderer from '../HTMLStringRenderer';
 import ReactFileReader from 'react-file-reader';
 import 'element-theme-default';
@@ -24,12 +24,22 @@ const receiversTablecolumns = [
         prop: "email",
         minWidth: 250,
     },
+    {
+        label: "",
+        render: function () {
+            return (
+                <span>
+                    <Button plain={true} type="info" size="small">Test Email</Button>
+                </span>
+            )
+        }
+    }
 ];
 
 const campaignFactory = {
     create() {
         return {
-            emails: [],
+            contactsData: [],
             html: "",
             subject: "",
         };
@@ -37,10 +47,11 @@ const campaignFactory = {
 };
 
 const campaignSchema = {
-    emails: ["arrayLength:1"],
+    contactsData: ["arrayLength:1"],
     html: ["required"],
     subject: ["required"],
 };
+const messageDuration = 4000;
 
 class CampaignNewPage extends React.Component {
     constructor(props) {
@@ -73,7 +84,7 @@ class CampaignNewPage extends React.Component {
     };
 
     onCsvChange = (files) => {
-        let emails = [];
+        let contactsData = [];
         let letFileCounter = 0;
         for (let item = 0; item < files.length; item++) {
             const file = files[item];
@@ -84,12 +95,12 @@ class CampaignNewPage extends React.Component {
                     separator: ',', // use the separator you use in your csv (e.g. '\t', ',', ';' ...)
                 });
                 arrayOfObjects.shift();
-                emails = emails.concat(arrayOfObjects)
+                contactsData = contactsData.concat(arrayOfObjects)
 
                 letFileCounter++;
                 if (letFileCounter === files.length) {
-                    this.setField("emails", emails);
-                    this.onTouch("emails");
+                    this.setField("contactsData", contactsData);
+                    this.onTouch("contactsData");
                 }
             };
             reader.readAsText(file);
@@ -129,50 +140,102 @@ class CampaignNewPage extends React.Component {
     };
 
     submit = () => {
-        const { html, emails, subject } = this.state.fields;
+        const { html, contactsData, subject } = this.state.fields;
 
-        if (!this.canSubmit()) {
-            this.touchAllFields();
-            return;
-        }
-        const receivers = emails.map((email) => ({
-            email: email.email,
-            props: email,
-        }));
-        http.post("/api/v1/campaigns", {
-            data: {
-                receivers,
-                prototype: {
-                    html,
-                    subject,
-                    status: "new",
-                    smtpLogin: "mrriddick7@gmail.com",
-                    smtpPassword: "xxx",
-                },
-            }
-        })
-            .then((response) => {
-                this.clearFields();
-                Message({
-                    message: 'Emails have been added to the queue',
-                    type: 'success'
-                });
+        if (this.canSubmit()) {
+            const receivers = contactsData.map((contactData) => ({
+                email: contactData.email,
+                props: contactData,
+            }));
+    
+            http.post("/api/v1/campaigns", {
+                data: {
+                    receivers,
+                    prototype: {
+                        html,
+                        subject,
+                        status: "new",
+                        smtpLogin: "mrriddick7@gmail.com",
+                        smtpPassword: "xxx",
+                    },
+                }
             })
-            .catch((error) => {
-                console.log(error);
+                .then((response) => {
+                    this.clearFields();
+                    Message({
+                        message: 'Emails have been added to the queue',
+                        type: 'success',
+                        duration: messageDuration,
+                    });
+                })
+                .catch((error) => {
+                    console.log(error);
+                    Message({
+                        message: 'Fail to add emails to the queue',
+                        type: 'error',
+                        duration: messageDuration,
+                    });
+                });
+        } else {
+            this.touchAllFields();
+        }
+    }
+
+    handleTestEmail = (item) => {
+        if (this.canSubmit()) {
+            MessageBox.prompt('Please input destination e-mail', 'Test email', {
+                confirmButtonText: 'Send',
+                cancelButtonText: 'Cancel',
+                inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+                inputErrorMessage: 'Invalid Email'
+            }).then(({ value }) => {
+                this.postTestEmail(value, item)
+            }).catch(() => {
                 Message({
-                    message: 'Fail to add emails to the queue',
-                    type: 'error'
+                    type: 'info',
+                    message: 'Input canceled'
                 });
             });
-    };
+        } else {
+            this.touchAllFields();
+        }
+    }
+
+    postTestEmail = (destinationEmail, contactData) => {
+        const { html, subject } = this.state.fields;
+
+        http.post("/api/v1/testemail", {
+            data: {
+                receiver: destinationEmail,
+                contactdata: contactData,
+                html,
+                subject,
+            }
+        })
+        .then((response) => {
+            Message({
+                message: `Test email have been send to\r\n${destinationEmail}`,
+                type: 'success',
+                duration: messageDuration,
+            });
+        })
+        .catch((error) => {
+            console.log(error);
+            Message({
+                message: 'Fail to send test email',
+                type: 'error',
+                duration: messageDuration,
+            });
+        });
+    }
 
     render() {
         const { errors, touched } = this.state;
-        const { emails, html, subject } = this.state.fields;
+        const { contactsData, html, subject } = this.state.fields;
+        
         return (
             <div className={styles.campaignNewPageWrapper}>
-                {JSON.stringify(errors)}
+                {/* {JSON.stringify(errors)} */}
                 <Input className={styles.subjectInput}
                        type="text"
                        placeholder="subject"
@@ -193,8 +256,8 @@ class CampaignNewPage extends React.Component {
                         </Button>
                     </ReactFileReader>
                     {
-                        touched.emails && errors.emails &&
-                        <span className={styles.validationError}>{errors.emails}</span>
+                        touched.contactsData && errors.contactsData &&
+                        <span className={styles.validationError}>{errors.contactsData}</span>
                     }
                 </div>
 
@@ -215,12 +278,13 @@ class CampaignNewPage extends React.Component {
                 <h3 className={styles.h3Text}>Receivers:</h3>
                 <Table
                     style={{ width: '80%' }}
-                    height={250}
+                    maxHeight={250}
                     columns={receiversTablecolumns}
-                    data={emails}
+                    data={contactsData}
                     stripe={true}
                     /* emptyText fix chinese localization */
                     emptyText={"receivers list is empty"}
+                    onCurrentChange={this.handleTestEmail}
                 />
 
                 <h3 className={styles.h3Text}>HTML template:</h3>

@@ -1,5 +1,5 @@
 import React from 'react';
-import './styles.css';
+import styles from './styles.module.css'; // Import css modules stylesheet as styles
 import PropTypes from 'prop-types';
 import 'element-theme-default';
 
@@ -57,7 +57,7 @@ class HTMLStringRenderer extends React.Component {
      * This component renders just and iframe
      */
     render() {
-        return <iframe className="iframeForHTML" ref="iframe">Browser not compatible.</iframe>
+        return <iframe className={styles.iframeForHTML} ref="iframe">Browser not compatible.</iframe>
     }
 }
 
