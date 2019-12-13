@@ -2,7 +2,8 @@ const development = {
     debug: true,
     client: 'pg',
     connection: {
-        host : '34.65.174.239',
+        host : 'localhost',
+        port: '5433',
         user : 'postgres',
         password : '8pM6oDOgbkyxuMH9',
         database : 'dockerdemo_development'
