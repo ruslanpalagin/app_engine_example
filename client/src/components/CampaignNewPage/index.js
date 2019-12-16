@@ -1,19 +1,23 @@
 import React from 'react';
 import http from '../../services/http';
+import auth from '../../services/auth';
 import formValidator from '../../utils/formValidator';
 import styles from './styles.module.css'; // Import css modules stylesheet as styles
-import { Input } from 'element-react';
-import { Button } from 'element-react';
-import { Table } from 'element-react';
-import { Message } from 'element-react';
-import { MessageBox } from 'element-react';
+import {
+    Input,
+    Button,
+    Table,
+    Message,
+    MessageBox,
+    Tooltip,
+} from 'element-react';
 import HTMLStringRenderer from '../HTMLStringRenderer';
 import ReactFileReader from 'react-file-reader';
 import 'element-theme-default';
 
 const { convertCSVToArray } = require('convert-csv-to-array');
 
-const receiversTablecolumns = [
+const receiversTableColumns = [
     {
         label: "Name",
         prop: "name",
@@ -26,22 +30,25 @@ const receiversTablecolumns = [
     },
     {
         label: "",
-        render: function () {
-            return (
-                <span>
+        render: () => (
+            <span>
+                <Tooltip content="Send to yourself or your manager to test before sending to recipient." placement="top">
                     <Button plain={true} type="info" size="small">Test Email</Button>
-                </span>
-            )
-        }
+                </Tooltip>
+            </span>
+        )
     }
 ];
 
 const campaignFactory = {
-    create() {
+    create(attrs) {
         return {
             contactsData: [],
             html: "",
             subject: "",
+            smtpLogin: "",
+            smtpPassword: "",
+            ...attrs
         };
     },
 };
@@ -50,13 +57,15 @@ const campaignSchema = {
     contactsData: ["arrayLength:1"],
     html: ["required"],
     subject: ["required"],
+    smtpLogin: ["required"],
+    smtpPassword: ["required"],
 };
-const messageDuration = 4000;
+const MESSAGE_TIMEOUT = 4000;
 
 class CampaignNewPage extends React.Component {
     constructor(props) {
         super(props);
-        const fields = campaignFactory.create();
+        const fields = campaignFactory.create({ smtpLogin: auth.getUser() ? auth.getUser().email : "" });
         const { errors } = formValidator.isValid(fields, campaignSchema);
         this.state = {
             fields,
@@ -140,23 +149,23 @@ class CampaignNewPage extends React.Component {
     };
 
     submit = () => {
-        const { html, contactsData, subject } = this.state.fields;
+        const { html, contactsData, subject, smtpLogin, smtpPassword } = this.state.fields;
 
         if (this.canSubmit()) {
             const receivers = contactsData.map((contactData) => ({
                 email: contactData.email,
                 props: contactData,
             }));
-    
+
             http.post("/api/v1/campaigns", {
                 data: {
                     receivers,
                     prototype: {
                         html,
                         subject,
-                        status: "new",
-                        smtpLogin: "mrriddick7@gmail.com",
-                        smtpPassword: "xxx",
+                        status: "approved",
+                        smtpLogin,
+                        smtpPassword,
                     },
                 }
             })
@@ -165,7 +174,7 @@ class CampaignNewPage extends React.Component {
                     Message({
                         message: 'Emails have been added to the queue',
                         type: 'success',
-                        duration: messageDuration,
+                        duration: MESSAGE_TIMEOUT,
                     });
                 })
                 .catch((error) => {
@@ -173,7 +182,7 @@ class CampaignNewPage extends React.Component {
                     Message({
                         message: 'Fail to add emails to the queue',
                         type: 'error',
-                        duration: messageDuration,
+                        duration: MESSAGE_TIMEOUT,
                     });
                 });
         } else {
@@ -187,14 +196,10 @@ class CampaignNewPage extends React.Component {
                 confirmButtonText: 'Send',
                 cancelButtonText: 'Cancel',
                 inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-                inputErrorMessage: 'Invalid Email'
+                inputErrorMessage: 'Invalid Email',
+                inputValue: auth.getUser().email,
             }).then(({ value }) => {
                 this.postTestEmail(value, item)
-            }).catch(() => {
-                Message({
-                    type: 'info',
-                    message: 'Input canceled'
-                });
             });
         } else {
             this.touchAllFields();
@@ -202,37 +207,39 @@ class CampaignNewPage extends React.Component {
     }
 
     postTestEmail = (destinationEmail, contactData) => {
-        const { html, subject } = this.state.fields;
+        const { html, subject, smtpLogin, smtpPassword } = this.state.fields;
 
-        http.post("/api/v1/testemail", {
+        http.post("/api/v1/silent-submissions", {
             data: {
-                receiver: destinationEmail,
-                contactdata: contactData,
-                html,
+                email: destinationEmail,
+                props: contactData,
                 subject,
-            }
+                html,
+                smtpLogin,
+                smtpPassword,
+            },
         })
-        .then((response) => {
-            Message({
-                message: `Test email have been send to\r\n${destinationEmail}`,
-                type: 'success',
-                duration: messageDuration,
+            .then((response) => {
+                Message({
+                    message: `Test email have been send to\r\n${destinationEmail}`,
+                    type: 'success',
+                    duration: MESSAGE_TIMEOUT,
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+                Message({
+                    message: 'Fail to send test email',
+                    type: 'error',
+                    duration: MESSAGE_TIMEOUT,
+                });
             });
-        })
-        .catch((error) => {
-            console.log(error);
-            Message({
-                message: 'Fail to send test email',
-                type: 'error',
-                duration: messageDuration,
-            });
-        });
     }
 
     render() {
         const { errors, touched } = this.state;
-        const { contactsData, html, subject } = this.state.fields;
-        
+        const { contactsData, html, subject, smtpPassword, smtpLogin } = this.state.fields;
+
         return (
             <div className={styles.campaignNewPageWrapper}>
                 {/* {JSON.stringify(errors)} */}
@@ -243,9 +250,33 @@ class CampaignNewPage extends React.Component {
                        onChange={(value) => this.setField("subject", value)}
                        onBlur={() => this.onTouch("subject")}
                 />
+
                 {
                     touched.subject && errors.subject &&
                     <span className={styles.validationError}>{errors.subject}</span>
+                }
+                <Input className={styles.subjectInput}
+                       type="text"
+                       placeholder="Gmail Login"
+                       value={smtpLogin}
+                       onChange={(value) => this.setField("smtpLogin", value)}
+                       onBlur={() => this.onTouch("smtpLogin")}
+                />
+
+                {
+                    touched.smtpLogin && errors.smtpLogin &&
+                    <span className={styles.validationError}>{errors.smtpLogin}</span>
+                }
+                <Input className={styles.subjectInput}
+                       type="password"
+                       placeholder="Gmail Password"
+                       value={smtpPassword}
+                       onChange={(value) => this.setField("smtpPassword", value)}
+                       onBlur={() => this.onTouch("smtpPassword")}
+                />
+                {
+                    touched.smtpPassword && errors.smtpPassword &&
+                    <span className={styles.validationError}>{errors.smtpPassword}</span>
                 }
 
                 <div className={styles.uploadButtonWrapper}>
@@ -279,7 +310,7 @@ class CampaignNewPage extends React.Component {
                 <Table
                     style={{ width: '80%' }}
                     maxHeight={250}
-                    columns={receiversTablecolumns}
+                    columns={receiversTableColumns}
                     data={contactsData}
                     stripe={true}
                     /* emptyText fix chinese localization */

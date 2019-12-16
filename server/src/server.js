@@ -8,25 +8,16 @@ const emailRequestProcessor = require('./services/emailRequestProcessor');
 
 app.use(cors());
 
-const homeAction = require("./http/home");
-const pubAction = require("./http/pubAction");
+router.get("/", require("./http/home"));
+router.get("/pub", require("./http/pubAction"));
 
-const getEmailsAction = require("./api/v1/emails/getEmailsAction");
-const patchEmailAction = require("./api/v1/emails/patchEmailAction");
-const createSubmissionAction = require("./api/v1/emails/submissions/createSubmissionAction");
-const createTokenAction = require("./api/v1/tokens/createTokenAction");
-const getMeAction = require("./api/v1/users/getMeAction");
-const createCampaignAction = require("./api/v1/campaigns/createCampaignAction");
-
-router.get("/", homeAction);
-router.get("/pub", pubAction);
-
-router.post("/api/v1/tokens", koaBody(), createTokenAction);
-router.get("/api/v1/emails", withAuth(), getEmailsAction);
-router.patch("/api/v1/emails/:id", withAuth(), koaBody(), patchEmailAction);
-router.post("/api/v1/emails/:id/submissions", withAuth(), koaBody(), createSubmissionAction);
-router.get("/api/v1/users/me", withAuth(), getMeAction);
-router.post("/api/v1/campaigns", withAuth(), koaBody(), createCampaignAction);
+router.post("/api/v1/tokens", koaBody(), require("./api/v1/tokens/createTokenAction"));
+router.get("/api/v1/emails", withAuth(), require("./api/v1/emails/getEmailsAction"));
+router.patch("/api/v1/emails/:id", withAuth(), koaBody(), require("./api/v1/emails/patchEmailAction"));
+router.post("/api/v1/emails/:id/submissions", withAuth(), koaBody(), require("./api/v1/tokens/createTokenAction"));
+router.get("/api/v1/users/me", withAuth(), require("./api/v1/users/getMeAction"));
+router.post("/api/v1/campaigns", withAuth(), koaBody(), require("./api/v1/campaigns/createCampaignAction"));
+router.post("/api/v1/silent-submissions", withAuth(), koaBody(), require("./api/v1/silentSubmissions/createSilentSubmissionAction"));
 
 app.use(router.routes());
 app.listen(8080);
