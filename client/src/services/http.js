@@ -1,7 +1,7 @@
 import axios from "axios";
 import auth from "./auth";
 
-const isProduction = window.location.host.includes("appspot");
+const isProduction = window.location.host.includes("emails");
 
 const instance = axios.create({
     baseURL: isProduction ? "https://docker-test-241719.appspot.com" : 'http://localhost:8080',
