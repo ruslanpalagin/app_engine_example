@@ -2,7 +2,7 @@ import React from 'react';
 import EmailsIndexPage from './components/EmailsIndexPage';
 import CampaignNewPage from './components/CampaignNewPage';
 import Login from './components/Login';
-import './App.css';
+import styles from './App.module.css';
 import { Menu } from 'element-react';
 import 'element-theme-default';
 import {
@@ -12,24 +12,14 @@ import {
     Link
 } from "react-router-dom";
 
-
 class App extends React.Component {
-
-    componentDidMount() {
-        document.title = "The best email sender"
-    }
-
-    onSelect = (index) => {
-
-    }
-
     render() {
         return (
 
             <div>
                 <Router>
                     <div>
-                        <Menu theme="dark" defaultActive="1" className="el-menu-demo" mode="horizontal" onSelect={this.onSelect}>
+                        <Menu theme="dark" defaultActive="1" className={styles.menu} mode="horizontal" onSelect={this.onSelect}>
                             <Link to="/">
                                 <Menu.Item index="1">
                                     Send Email
@@ -41,9 +31,11 @@ class App extends React.Component {
                                     Email Queue
                                 </Menu.Item>
                             </Link>
+
+                            <Login />
                         </Menu>
 
-			<Login />
+
 
                         <Switch>
                             <Route path="/email_queue">

@@ -1,0 +1,11 @@
+.login{
+    height: 60px;
+    color: #bfcbd9;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.login__button{
+    margin-left: 11px;
+}

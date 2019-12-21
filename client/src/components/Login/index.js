@@ -2,7 +2,8 @@ import React from 'react';
 import http from '../../services/http';
 import auth from '../../services/auth';
 import { GoogleLogin } from 'react-google-login';
-import './styles.css';
+import styles from './styles.module.css';
+import { Button } from 'element-react';
 
 class Login extends React.Component {
     constructor(props){
@@ -49,13 +50,18 @@ class Login extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className={styles.login}>
                 {
                     auth.getUser()
                         ?
                         <span>
-                            Hello, ${auth.getUser().name}
-                            <button onClick={this.logout}>Logout</button>
+                            Hello, {auth.getUser().name}
+                            <Button
+                                className={styles.login__button}
+                                onClick={this.logout}
+                                type="info"
+                                plain
+                            >Logout</Button>
                         </span>
                         :
                         <GoogleLogin
