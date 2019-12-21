@@ -2,6 +2,7 @@ import React from 'react';
 import EmailsIndexPage from './components/EmailsIndexPage';
 import CampaignNewPage from './components/CampaignNewPage';
 import Login from './components/Login';
+import WithAuth from './components/WithAuth';
 import styles from './App.module.css';
 import { Menu } from 'element-react';
 import 'element-theme-default';
@@ -35,14 +36,16 @@ class App extends React.Component {
                             <Login />
                         </Menu>
 
-
-
                         <Switch>
                             <Route path="/email_queue">
-                                <EmailsIndexPage />
+                                <WithAuth>
+                                    <EmailsIndexPage />
+                                </WithAuth>
                             </Route>
                             <Route path="/">
-                                <CampaignNewPage />
+                                <WithAuth>
+                                    <CampaignNewPage />
+                                </WithAuth>
                             </Route>
                         </Switch>
                     </div>

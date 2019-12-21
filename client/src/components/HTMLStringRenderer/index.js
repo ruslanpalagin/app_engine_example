@@ -10,13 +10,6 @@ import 'element-theme-default';
  */
 class HTMLStringRenderer extends React.Component {
 
-    static propTypes = {
-        // content: React.PropTypes.string.isRequired,
-        // stylesheets: React.PropTypes.arrayOf(React.PropTypes.string),
-        content: PropTypes.string.isRequired,
-        stylesheets: PropTypes.arrayOf(PropTypes.string),
-    };
-
     /**
      * Called after mounting the component. Triggers initial update of
      * the iframe
@@ -60,5 +53,12 @@ class HTMLStringRenderer extends React.Component {
         return <iframe className={styles.iframeForHTML} ref="iframe">Browser not compatible.</iframe>
     }
 }
+
+HTMLStringRenderer.propTypes = {
+    // content: React.PropTypes.string.isRequired,
+    // stylesheets: React.PropTypes.arrayOf(React.PropTypes.string),
+    content: PropTypes.string.isRequired,
+    stylesheets: PropTypes.arrayOf(PropTypes.string),
+};
 
 export default HTMLStringRenderer;
