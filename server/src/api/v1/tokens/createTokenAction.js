@@ -11,7 +11,7 @@ module.exports = async (ctx) => {
     console.log("apiToken", apiToken);
 
     if (!user) {
-        user = { googleId, apiToken, email: profileObj.email, name: profileObj.name };
+        user = { googleId, apiToken, email: profileObj.email, name: profileObj.name, googleResponse };
         await knex('users').insert(user);
     } else {
         await knex('users')
@@ -19,6 +19,7 @@ module.exports = async (ctx) => {
         .update({
             apiToken,
             googleId,
+            googleResponse,
         });
     }
 
