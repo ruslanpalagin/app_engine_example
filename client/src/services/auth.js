@@ -1,8 +1,14 @@
+import decorateWithEvents from '../utils/decorateWithEvents';
+
 const storage = {
+    namespace: "auth.v0.2",
     key(name) {
-        return `auth.v0.2.${name}`;
+        return `${this.namespace}.${name}`;
     },
     save(name, value) {
+        setTimeout(() => this.saveSync(name, value), 1);
+    },
+    saveSync(name, value) {
         localStorage.setItem(this.key(name), JSON.stringify(value));
     },
     load(name) {
@@ -21,20 +27,19 @@ const storage = {
     },
 };
 
-const auth = {
+const auth = decorateWithEvents({
+    CHANGE: "change",
     apiToken: storage.load("apiToken"),
     user: storage.load("user"),
     authenticate(apiToken = null, user = null) {
         this.apiToken = apiToken;
         this.user = apiToken ? user : null;
+        this.emit(this.CHANGE, this.getState());
         storage.save("apiToken", apiToken);
         storage.save("user", user);
     },
     getUser() {
         return this.user;
-    },
-    isAuthenticated() {
-        return !!this.apiToken;
     },
     getApiToken() {
         return this.apiToken;
@@ -42,9 +47,13 @@ const auth = {
     logout() {
         this.apiToken = null;
         this.user = null;
+        this.emit(this.CHANGE, this.getState());
         storage.save("apiToken", null);
         storage.save("user", null);
     },
-};
+    getState(){
+        return { user: this.user, apiToken: this.apiToken };
+    },
+});
 
 export default auth;

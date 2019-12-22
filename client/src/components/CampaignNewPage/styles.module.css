@@ -1,45 +1,43 @@
-.subjectInput {
-    width: 60%;
-    margin-top: 30px;
-    /* margin-bottom: 30px; */
+.page{
+    padding: 30px 0;
 }
 
-.campaignNewPageWrapper {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.el-icon-upload {
+.icon {
     padding-right: 5px;
 }
 
 .h1Text {
-    margin: 3px;
-    margin-top: 10px;
-}
-
-.h3Text {
-    margin: 3px;
-    margin-top: 10px;
+    margin: 10px 3px 3px;
 }
 
 .validationError {
-    padding: 5px;
+    padding: 3px 0;
     font-size: 12px;
     color: red;
     display: block;
+}
+
+.uploadRow :global(.react-file-reader){
+    display: inline-block;
+}
+
+.uploadRow__example{
+    margin-left: 15px;
+    font-size: 12px;
+    color: #a4a4a4;
+}
+
+.uploadRow__button{
+    min-width: 210px;
+}
+
+.submitBlock{
+    padding-top: 15px;
     text-align: center;
 }
 
-.uploadButtonWrapper {
-    margin-top: 20px;
-}
-
 .sendButton {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    width: 250px;
 }
 
 .sendButtonDisabled{

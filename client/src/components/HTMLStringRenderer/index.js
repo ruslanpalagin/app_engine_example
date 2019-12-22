@@ -10,13 +10,6 @@ import 'element-theme-default';
  */
 class HTMLStringRenderer extends React.Component {
 
-    static propTypes = {
-        // content: React.PropTypes.string.isRequired,
-        // stylesheets: React.PropTypes.arrayOf(React.PropTypes.string),
-        content: PropTypes.string.isRequired,
-        stylesheets: PropTypes.arrayOf(PropTypes.string),
-    };
-
     /**
      * Called after mounting the component. Triggers initial update of
      * the iframe
@@ -29,8 +22,10 @@ class HTMLStringRenderer extends React.Component {
      * Called each time the props changes. Triggers an update of the iframe to
      * pass the new content
      */
-    componentDidUpdate() {
-        this._updateIframe();
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.content !== this.props.content) {
+            this._updateIframe();
+        }
     }
 
     /**
@@ -39,18 +34,11 @@ class HTMLStringRenderer extends React.Component {
      * and algorithm which updates the stylesheets properly.
      */
     _updateIframe() {
-        const iframe = this.refs.iframe;
-        const document = iframe.contentDocument;
-        const head = document.getElementsByTagName('head')[0];
-        document.body.innerHTML = this.props.content;
-
-        this.props.stylesheets.forEach(url => {
-            const ref = document.createElement('link');
-            ref.rel = 'stylesheet';
-            ref.type = 'text/css';
-            ref.href = url;
-            head.appendChild(ref);
-        });
+        setTimeout(() => {
+            const iframe = this.refs.iframe;
+            const document = iframe.contentDocument;
+            document.body.innerHTML = this.props.content;
+        }, 100);
     }
 
     /**
@@ -60,5 +48,11 @@ class HTMLStringRenderer extends React.Component {
         return <iframe className={styles.iframeForHTML} ref="iframe">Browser not compatible.</iframe>
     }
 }
+
+HTMLStringRenderer.propTypes = {
+    // content: React.PropTypes.string.isRequired,
+    // stylesheets: React.PropTypes.arrayOf(React.PropTypes.string),
+    content: PropTypes.string.isRequired,
+};
 
 export default HTMLStringRenderer;
