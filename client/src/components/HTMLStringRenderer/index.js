@@ -35,10 +35,8 @@ class HTMLStringRenderer extends React.Component {
      */
     _updateIframe() {
         setTimeout(() => {
-            console.log("_updateIframe");
             const iframe = this.refs.iframe;
             const document = iframe.contentDocument;
-            console.log("this.props.content", this.props.content);
             document.body.innerHTML = this.props.content;
         }, 100);
     }
