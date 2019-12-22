@@ -2,6 +2,7 @@ import React from 'react';
 import http from '../../services/http';
 import styles from './styles.module.css'; // Import css modules stylesheet as styles
 import { Table } from 'element-react';
+import NanoLoader from '../NanoLoader';
 import 'element-theme-default';
 
 
@@ -39,6 +40,7 @@ class EmailsIndexPage extends React.Component {
         
         this.state = {
             emails: [],
+            isLoading: true,
         }
     }
     
@@ -47,6 +49,7 @@ class EmailsIndexPage extends React.Component {
         .then((response) => {
             this.setState(() => ({
                 emails: response.data.data,
+                isLoading: false,
             }));
         })
     };
@@ -57,7 +60,9 @@ class EmailsIndexPage extends React.Component {
     }
 
     render() {
-        const { emails } = this.state;
+        const { emails, isLoading} = this.state;
+
+        console.log('isLoading', isLoading);
 
         const emailsQueueTableData = emails.map((email)=> ({
             status: email.status,
@@ -69,7 +74,32 @@ class EmailsIndexPage extends React.Component {
 
         return (
             <div type="primary">
-                <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                {/* <h1 className={styles.queueTittle}>Emails in a queue:</h1> */}
+                <NanoLoader
+                    className={styles.queueTittle}
+                    // isLoading={false}
+                    isLoading={true}
+                    children={<h1 className={styles.queueTittle}>Emails in dsdsda queue:</h1>}>
+                    <div>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                        <h1 className={styles.queueTittle}>Emails in a queue:</h1>
+                    </div>
+                </NanoLoader>
 
                 <Table
                     style={{ width: '100%' }}

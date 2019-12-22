@@ -1,0 +1,75 @@
+.nano-loader{
+  position: relative;
+
+  > *:nth-child(1){
+    transition: opacity .2s;
+  }
+}
+
+.nano-loader__overlay{
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  text-align: center;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0s ease 0s, z-index 0s ease 0.3s;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nano-loader__spinner{
+  display: inline-block;
+  position: relative;
+
+  &:before {
+    content: ' ';
+    display: block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,0,0,.1);
+  }
+
+  &:after{
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+
+    content: ' ';
+    display: block;
+    width: 40px;
+    height: 40px;
+
+    -webkit-animation: nano-loader__keyframes .6s linear;
+    animation: nano-loader__keyframes .6s linear;
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    border-radius: 50%;
+    border-color: #767676 transparent transparent;
+    border-style: solid;
+    border-width: 2px;
+    box-shadow: 0 0 0 1px transparent;
+  }
+}
+
+.nano-loader--loading{
+  > *:nth-child(1){
+    opacity: 0.1;
+    pointer-events: none;
+  }
+
+  .nano-loader__overlay{
+    opacity: 0.6;
+    z-index: 1;
+    transition: opacity 0s ease 0s, z-index 0s ease 0s;
+  }
+}
+
+@keyframes nano-loader__keyframes{from{-webkit-transform:rotate(0);transform:rotate(0)}to{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}
