@@ -1,16 +1,15 @@
 import React from 'react';
-import styles from './styles.module.scss'; // Import css modules stylesheet as styles
+import styles from './styles.module.css';
 import PropTypes from "prop-types";
 
 const NanoLoader = ({ className, isLoading, children, skipSpinner }) => (    
     <div
-        className={className}
-        stylename={`${styles['nano-loader']} ${isLoading ? styles["nano-loader--loading"] : ""}`}
+        className={`${styles['nano-loader']} ${isLoading ? styles["nano-loader--loading"] : ""} ${className}`}
     >
         {children}
-        <div stylename={styles["nano-loader__overlay"]}>
+        <div className={styles["nano-loader__overlay"]}>
             {
-                !skipSpinner && <div stylename={styles["nano-loader__spinner"]} />
+                !skipSpinner && <div className={styles["nano-loader__spinner"]} />
             }
         </div>
     </div>
