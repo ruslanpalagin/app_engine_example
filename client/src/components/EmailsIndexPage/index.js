@@ -2,6 +2,7 @@ import React from 'react';
 import http from '../../services/http';
 import styles from './styles.module.css'; // Import css modules stylesheet as styles
 import { Table } from 'element-react';
+import NanoLoader from '../presenters/NanoLoader';
 import 'element-theme-default';
 
 
@@ -36,19 +37,22 @@ const tableColumns = [
 class EmailsIndexPage extends React.Component {
     constructor(props){
         super(props);
-        
+
         this.state = {
             emails: [],
+            isLoading: true,
         }
     }
-    
+
     refresh = () => {
+        this.setState(() => ({ isLoading: true }));
         http.get("/api/v1/emails")
-        .then((response) => {
-            this.setState(() => ({
-                emails: response.data.data,
-            }));
-        })
+            .then((response) => {
+                this.setState(() => ({
+                    emails: response.data.data,
+                    isLoading: false,
+                }));
+            })
     };
 
     componentDidMount() {
@@ -57,7 +61,7 @@ class EmailsIndexPage extends React.Component {
     }
 
     render() {
-        const { emails } = this.state;
+        const { emails, isLoading } = this.state;
 
         const emailsQueueTableData = emails.map((email)=> ({
             status: email.status,
@@ -70,15 +74,19 @@ class EmailsIndexPage extends React.Component {
         return (
             <div type="primary">
                 <h1 className={styles.queueTittle}>Emails in a queue:</h1>
-
-                <Table
-                    style={{ width: '100%' }}
-                    columns={tableColumns}
-                    data={emailsQueueTableData}
-                    stripe={true}
-                    /* emptyText fix chinese localization */
-                    emptyText={"queue is empty"}
-                />
+                <NanoLoader
+                    className={styles.queueTittle}
+                    isLoading={isLoading}
+                    children={<h1 className={styles.queueTittle}>Emails in dsdsda queue:</h1>}>
+                    <Table
+                        style={{ width: '100%' }}
+                        columns={tableColumns}
+                        data={emailsQueueTableData}
+                        stripe={true}
+                        /* emptyText fix chinese localization */
+                        emptyText={"queue is empty"}
+                    />
+                </NanoLoader>
             </div>
         );
     }
