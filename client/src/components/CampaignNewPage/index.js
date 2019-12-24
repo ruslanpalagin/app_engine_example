@@ -2,6 +2,9 @@ import React from 'react';
 import http from '../../services/http';
 import auth from '../../services/auth';
 import formValidator from '../../utils/formValidator';
+import FormGroup from '../presenters/FormGroup';
+import { Container, Row, Col } from '../presenters/Grid';
+import url from '../../utils/url';
 import styles from './styles.module.css'; // Import css modules stylesheet as styles
 import {
     Input,
@@ -241,91 +244,114 @@ class CampaignNewPage extends React.Component {
         const { contactsData, html, subject, smtpPassword, smtpLogin } = this.state.fields;
 
         return (
-            <div className={styles.campaignNewPageWrapper}>
-                {/* {JSON.stringify(errors)} */}
-                <Input className={styles.subjectInput}
-                       type="text"
-                       placeholder="subject"
-                       value={subject}
-                       onChange={(value) => this.setField("subject", value)}
-                       onBlur={() => this.onTouch("subject")}
-                />
+            <div className={styles.page}>
+                <Container>
+                    <Row>
+                        <Col>
+                            <FormGroup>
+                                <Input className={""}
+                                       type="text"
+                                       placeholder="E-mail Subject *"
+                                       value={subject}
+                                       onChange={(value) => this.setField("subject", value)}
+                                       onBlur={() => this.onTouch("subject")}
+                                />
+                                {
+                                    touched.subject && errors.subject &&
+                                    <span className={styles.validationError}>{errors.subject}</span>
+                                }
+                            </FormGroup>
+                            <FormGroup>
+                                <div className={styles.uploadRow}>
+                                    <ReactFileReader handleFiles={this.onCsvChange} fileTypes={'.csv'} multipleFiles={true}>
+                                        <Button className={styles.uploadRow__button} type="primary">
+                                            <i className={['el-icon-upload', 'el-icon-right', styles['icon']].join(' ')} />
+                                            Upload emails (*.csv)
+                                        </Button>
+                                    </ReactFileReader>
+                                    <a className={styles.uploadRow__example} href={url.publicDir("/template1.html.txt")} target="_blank">Download an example file</a>
+                                    {
+                                        touched.contactsData && errors.contactsData &&
+                                        <span className={styles.validationError}>{errors.contactsData}</span>
+                                    }
+                                </div>
+                            </FormGroup>
+                            <FormGroup>
+                                <div className={styles.uploadRow}>
+                                    <ReactFileReader handleFiles={this.onHtmlChange} fileTypes={'.html'}>
+                                        <Button className={styles.uploadRow__button} type="primary">
+                                            <i className={['el-icon-upload', 'el-icon-right', styles['icon']].join(' ')} />
+                                            Upload template (*.html)
+                                        </Button>
+                                    </ReactFileReader>
+                                    <a className={styles.uploadRow__example} href={url.publicDir("/emails4.csv")} target="_blank">Download an example file</a>
+                                </div>
+                                {
+                                    touched.html && errors.html &&
+                                    <span className={styles.validationError}>{errors.html}</span>
+                                }
+                            </FormGroup>
+                        </Col>
+                        <Col>
+                            <FormGroup>
+                                <Input className={""}
+                                       type="text"
+                                       placeholder="Gmail Login *"
+                                       value={smtpLogin}
+                                       onChange={(value) => this.setField("smtpLogin", value)}
+                                       onBlur={() => this.onTouch("smtpLogin")}
+                                />
+                                {
+                                    touched.smtpLogin && errors.smtpLogin &&
+                                    <span className={styles.validationError}>{errors.smtpLogin}</span>
+                                }
+                            </FormGroup>
+                            <FormGroup>
+                                <Input className={""}
+                                       type="password"
+                                       placeholder="Gmail Password *"
+                                       value={smtpPassword}
+                                       onChange={(value) => this.setField("smtpPassword", value)}
+                                       onBlur={() => this.onTouch("smtpPassword")}
+                                />
+                                {
+                                    touched.smtpPassword && errors.smtpPassword &&
+                                    <span className={styles.validationError}>{errors.smtpPassword}</span>
+                                }
+                            </FormGroup>
+                        </Col>
+                    </Row>
 
-                {
-                    touched.subject && errors.subject &&
-                    <span className={styles.validationError}>{errors.subject}</span>
-                }
-                <Input className={styles.subjectInput}
-                       type="text"
-                       placeholder="Gmail Login"
-                       value={smtpLogin}
-                       onChange={(value) => this.setField("smtpLogin", value)}
-                       onBlur={() => this.onTouch("smtpLogin")}
-                />
-
-                {
-                    touched.smtpLogin && errors.smtpLogin &&
-                    <span className={styles.validationError}>{errors.smtpLogin}</span>
-                }
-                <Input className={styles.subjectInput}
-                       type="password"
-                       placeholder="Gmail Password"
-                       value={smtpPassword}
-                       onChange={(value) => this.setField("smtpPassword", value)}
-                       onBlur={() => this.onTouch("smtpPassword")}
-                />
-                {
-                    touched.smtpPassword && errors.smtpPassword &&
-                    <span className={styles.validationError}>{errors.smtpPassword}</span>
-                }
-
-                <div className={styles.uploadButtonWrapper}>
-                    <ReactFileReader handleFiles={this.onCsvChange} fileTypes={'.csv'} multipleFiles={true}>
-                        <Button className="uploadButton" type="primary">
-                            <i className={['el-icon-upload', 'el-icon-right', styles['el-icon-upload']].join(' ')}></i>
-                            Click to upload csv
-                        </Button>
-                    </ReactFileReader>
                     {
-                        touched.contactsData && errors.contactsData &&
-                        <span className={styles.validationError}>{errors.contactsData}</span>
+                        contactsData.length > 0 &&
+                        <>
+                            <h1 className={styles.h1Text}>Receivers:</h1>
+                            <Table
+                                maxHeight={250}
+                                columns={receiversTableColumns}
+                                data={contactsData}
+                                stripe={true}
+                                /* emptyText fix chinese localization */
+                                emptyText={"receivers list is empty"}
+                                onCurrentChange={this.handleTestEmail}
+                            />
+                        </>
                     }
-                </div>
 
-                <div className={styles.uploadButtonWrapper}>
-                    <ReactFileReader handleFiles={this.onHtmlChange} fileTypes={'.html'}>
-                        <Button className="uploadButton" type="primary">
-                            <i className={['el-icon-upload', 'el-icon-right', styles['el-icon-upload']].join(' ')}></i>
-                            Click to upload html
-                        </Button>
-                    </ReactFileReader>
                     {
-                        touched.html && errors.html &&
-                        <span className={styles.validationError}>{errors.html}</span>
+                        html.length > 0 &&
+                        <>
+                            <h1 className={styles.h1Text}>Preview:</h1>
+                            <FormGroup>
+                                <HTMLStringRenderer content={html} stylesheets={[]}/>
+                            </FormGroup>
+                        </>
                     }
-                </div>
 
-                <h1 className={styles.h1Text}>To upload:</h1>
-                <h3 className={styles.h3Text}>Receivers:</h3>
-                <Table
-                    style={{ width: '80%' }}
-                    maxHeight={250}
-                    columns={receiversTableColumns}
-                    data={contactsData}
-                    stripe={true}
-                    /* emptyText fix chinese localization */
-                    emptyText={"receivers list is empty"}
-                    onCurrentChange={this.handleTestEmail}
-                />
-
-                <h3 className={styles.h3Text}>HTML template:</h3>
-                {/* dissabled. It is do not necessary now, I think so */}
-                {/* <pre>
-                    {html}
-                </pre> */}
-                <HTMLStringRenderer content={html} stylesheets={[]}/>
-
-                <Button className={`${styles.sendButton} ${this.canSubmit() ? "" : styles.sendButtonDisabled}`} type="warning" onClick={this.submit}>SEND</Button>
+                    <div className={styles.submitBlock}>
+                        <Button className={`${styles.sendButton} ${this.canSubmit() ? "" : styles.sendButtonDisabled}`} type="success" size="large" onClick={this.submit}>SEND</Button>
+                    </div>
+                </Container>
             </div>
         );
     }
