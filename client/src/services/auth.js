@@ -54,6 +54,13 @@ const auth = decorateWithEvents({
     getState(){
         return { user: this.user, apiToken: this.apiToken };
     },
+    getGoogleAccountNumber(){
+        try {
+            return this.user.googleResponse.Zi.session_state.extraQueryParams.authuser;
+        } catch (e) {
+            console.warn(e);
+        }
+    },
 });
 
 export default auth;

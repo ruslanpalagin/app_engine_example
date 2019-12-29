@@ -59,7 +59,7 @@ class Login extends React.Component {
                     auth.getUser()
                         ?
                         <span>
-                            Hello, {auth.getUser().name}
+                            <span title={auth.getUser().email}>Hello, {auth.getUser().name}</span>
                             <Button
                                 className={styles.login__button}
                                 onClick={this.logout}
