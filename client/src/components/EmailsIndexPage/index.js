@@ -62,15 +62,15 @@ class EmailsIndexPage extends React.Component {
                     <>
                         {
                             canApprove(resource) &&
-                            <Button plain={true} type="info" size="small" onClick={() => this.approve(resource)}>Approve</Button>
+                            <Button plain type="primary" size="small" onClick={() => this.approve(resource)}>Send</Button>
                         }
                         {
                             canRetry(resource) &&
-                            <Button plain={true} type="info" size="small" onClick={() => this.approve(resource)}>Retry</Button>
+                            <Button plain type="info" size="small" onClick={() => this.approve(resource)}>Retry</Button>
                         }
                         {
                             canDelete(resource) &&
-                            <Button plain={true} type="info" size="small" onClick={() => this.delete(resource)}>Delete</Button>
+                            <Button plain type="danger" size="small" onClick={() => this.delete(resource)} icon="delete2" />
                         }
                     </>
                 );
@@ -133,16 +133,17 @@ class EmailsIndexPage extends React.Component {
                     lockScroll={ false }
                 >
                     <Dialog.Body>
-                        <div>
+                        <p>
                             Please make sure that you've allowed permissions to this app:
-                        </div>
-                        <div>
+                        </p>
+                        <p>
                             1. <a href="https://myaccount.google.com/lesssecureapps" target="_blank">Less secure apps</a>
-                        </div>
-                        <div>
+                        </p>
+                        <p>
                             2. <a href={`https://accounts.google.com/b/${googleAccountNumber}/DisplayUnlockCaptcha`} target="_blank">Allow to send from API server</a>
-                        </div>
-                        <div>Click "Retry" once permissions granted</div>
+                        </p>
+                        <p>Click "Retry" once permissions granted</p>
+                        <p>If it doesn't help - recreate email with valid SMTP login and password</p>
                     </Dialog.Body>
                     <Dialog.Footer className="dialog-footer">
                         <Button onClick={ () => this.setState({ isShownTroublesDialog: false }) }>Cancel</Button>

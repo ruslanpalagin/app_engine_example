@@ -151,7 +151,10 @@ class CampaignNewPage extends React.Component {
         }));
     };
 
-    submit = () => {
+    submitImmediately = () => this.submit({ status: "approved" });
+    submitToQueue = () => this.submit({ status: "new" });
+
+    submit = ({ status }) => {
         const { html, contactsData, subject, smtpLogin, smtpPassword } = this.state.fields;
 
         if (this.canSubmit()) {
@@ -166,7 +169,7 @@ class CampaignNewPage extends React.Component {
                     prototype: {
                         html,
                         subject,
-                        status: "approved",
+                        status,
                         smtpLogin,
                         smtpPassword,
                     },
@@ -349,7 +352,8 @@ class CampaignNewPage extends React.Component {
                     }
 
                     <div className={styles.submitBlock}>
-                        <Button className={`${styles.sendButton} ${this.canSubmit() ? "" : styles.sendButtonDisabled}`} type="success" size="large" onClick={this.submit}>SEND</Button>
+                        <Button className={`${styles.sendButton} ${this.canSubmit() ? "" : styles.sendButtonDisabled}`} type="default" size="large" onClick={this.submitToQueue}>ADD TO QUEUE, SEND MANUALLY</Button>
+                        <Button className={`${styles.sendButton} ${this.canSubmit() ? "" : styles.sendButtonDisabled}`} type="success" size="large" onClick={this.submitImmediately}>SEND</Button>
                     </div>
                 </Container>
             </div>
