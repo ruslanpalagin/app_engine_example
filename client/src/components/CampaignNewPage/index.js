@@ -269,7 +269,7 @@ class CampaignNewPage extends React.Component {
                                             Upload emails (*.csv)
                                         </Button>
                                     </ReactFileReader>
-                                    <a className={styles.uploadRow__example} href={url.publicDir("/template1.html.txt")} target="_blank">Download an example file</a>
+                                    <a className={styles.uploadRow__example} href={url.publicDir("/emails4.csv")} target="_blank">Download an example file</a>
                                     {
                                         touched.contactsData && errors.contactsData &&
                                         <span className={styles.validationError}>{errors.contactsData}</span>
@@ -284,7 +284,7 @@ class CampaignNewPage extends React.Component {
                                             Upload template (*.html)
                                         </Button>
                                     </ReactFileReader>
-                                    <a className={styles.uploadRow__example} href={url.publicDir("/emails4.csv")} target="_blank">Download an example file</a>
+                                    <a className={styles.uploadRow__example} href={url.publicDir("/template1.html.txt")} target="_blank">Download an example file</a>
                                 </div>
                                 {
                                     touched.html && errors.html &&
