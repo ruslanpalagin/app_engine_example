@@ -6,6 +6,10 @@ import {Button, Table, Dialog} from 'element-react';
 import NanoLoader from '../presenters/NanoLoader';
 import 'element-theme-default';
 
+const canApprove = ({ status }) => ["new"].includes(status);
+const canRetry = ({ status }) => ["error"].includes(status);
+const canDelete = () => true;
+
 class EmailsIndexPage extends React.Component {
     constructor(props){
         super(props);
@@ -21,7 +25,7 @@ class EmailsIndexPage extends React.Component {
         {
             label: "Id",
             prop: "id",
-            width: 90
+            width: 75
         },
         {
             label: "Status",
@@ -39,17 +43,17 @@ class EmailsIndexPage extends React.Component {
         {
             label: "Name",
             render: (resource) => resource.props.name,
-            width: 200
+            width: 150
         },
         {
             label: "Email",
             prop: "email",
-            width: 280
+            width: 250
         },
         {
             label: "Subject",
             prop: "subject",
-            minWidth: 280,
+            minWidth: 150,
         },
         {
             label: "Actions",
@@ -57,15 +61,21 @@ class EmailsIndexPage extends React.Component {
                 return (
                     <>
                         {
-                            resource.status !== "error"
-                                ?
-                                <Button plain={true} type="info" size="small" onClick={() => this.approve(resource)}>Approve</Button>
-                                :
-                                <Button plain={true} type="info" size="small" onClick={() => this.approve(resource)}>Retry</Button>
+                            canApprove(resource) &&
+                            <Button plain={true} type="info" size="small" onClick={() => this.approve(resource)}>Approve</Button>
+                        }
+                        {
+                            canRetry(resource) &&
+                            <Button plain={true} type="info" size="small" onClick={() => this.approve(resource)}>Retry</Button>
+                        }
+                        {
+                            canDelete(resource) &&
+                            <Button plain={true} type="info" size="small" onClick={() => this.delete(resource)}>Delete</Button>
                         }
                     </>
                 );
-            }
+            },
+            minWidth: 280,
         }
     ];
 
@@ -87,6 +97,12 @@ class EmailsIndexPage extends React.Component {
     approve = (response) => {
         this.setState(() => ({ isLoading: true }));
         http.patch(`/api/v1/emails/${response.id}`, { data: { status: "approved" }})
+            .then(this.refresh);
+    };
+
+    delete = (response) => {
+        this.setState(() => ({ isLoading: true }));
+        http.patch(`/api/v1/emails/${response.id}`, { data: { status: "deleted" }})
             .then(this.refresh);
     };
 
