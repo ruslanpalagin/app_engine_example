@@ -29,7 +29,7 @@ class Login extends React.Component {
             });
     };
 
-    responseGoogle = (googleResponse) => {
+    onGoogleResponse = (googleResponse) => {
         console.log("googleResponse", googleResponse);
         http
             .post("/api/v1/tokens/", {
@@ -46,6 +46,10 @@ class Login extends React.Component {
     logout = () => {
         auth.logout();
         this.forceUpdate();
+    };
+
+    onGoogleError = (googleResponse) => {
+        console.debug("googleResponse", googleResponse);
     };
 
     render() {
@@ -67,8 +71,8 @@ class Login extends React.Component {
                         <GoogleLogin
                             clientId="387313480807-ii6coqol8qmfi2bp9cg1rag5d62gtg7n.apps.googleusercontent.com"
                             buttonText="Login"
-                            onSuccess={this.responseGoogle}
-                            onFailure={this.responseGoogle}
+                            onSuccess={this.onGoogleResponse}
+                            onFailure={this.onGoogleError}
                             scope="https://www.googleapis.com/auth/gmail.labels"
                         />
                 }
