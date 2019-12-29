@@ -57,7 +57,7 @@ class EmailsIndexPage extends React.Component {
 
     componentDidMount() {
         this.refresh();
-        setInterval(this.refresh, 5000);
+        setInterval(this.refresh, 30000);
     }
 
     render() {
