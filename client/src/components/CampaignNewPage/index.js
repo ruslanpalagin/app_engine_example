@@ -151,7 +151,10 @@ class CampaignNewPage extends React.Component {
         }));
     };
 
-    submit = () => {
+    submitImmediately = () => this.submit({ status: "approved" });
+    submitToQueue = () => this.submit({ status: "new" });
+
+    submit = ({ status }) => {
         const { html, contactsData, subject, smtpLogin, smtpPassword } = this.state.fields;
 
         if (this.canSubmit()) {
@@ -166,7 +169,7 @@ class CampaignNewPage extends React.Component {
                     prototype: {
                         html,
                         subject,
-                        status: "approved",
+                        status,
                         smtpLogin,
                         smtpPassword,
                     },
@@ -269,7 +272,7 @@ class CampaignNewPage extends React.Component {
                                             Upload emails (*.csv)
                                         </Button>
                                     </ReactFileReader>
-                                    <a className={styles.uploadRow__example} href={url.publicDir("/template1.html.txt")} target="_blank">Download an example file</a>
+                                    <a className={styles.uploadRow__example} href={url.publicDir("/emails4.csv")} target="_blank">Download an example file</a>
                                     {
                                         touched.contactsData && errors.contactsData &&
                                         <span className={styles.validationError}>{errors.contactsData}</span>
@@ -284,7 +287,7 @@ class CampaignNewPage extends React.Component {
                                             Upload template (*.html)
                                         </Button>
                                     </ReactFileReader>
-                                    <a className={styles.uploadRow__example} href={url.publicDir("/emails4.csv")} target="_blank">Download an example file</a>
+                                    <a className={styles.uploadRow__example} href={url.publicDir("/template1.html.txt")} target="_blank">Download an example file</a>
                                 </div>
                                 {
                                     touched.html && errors.html &&
@@ -349,7 +352,8 @@ class CampaignNewPage extends React.Component {
                     }
 
                     <div className={styles.submitBlock}>
-                        <Button className={`${styles.sendButton} ${this.canSubmit() ? "" : styles.sendButtonDisabled}`} type="success" size="large" onClick={this.submit}>SEND</Button>
+                        <Button className={`${styles.sendButton} ${this.canSubmit() ? "" : styles.sendButtonDisabled}`} type="default" size="large" onClick={this.submitToQueue}>ADD TO QUEUE, SEND MANUALLY</Button>
+                        <Button className={`${styles.sendButton} ${this.canSubmit() ? "" : styles.sendButtonDisabled}`} type="success" size="large" onClick={this.submitImmediately}>SEND</Button>
                     </div>
                 </Container>
             </div>

@@ -1,3 +1,7 @@
 .queueTittle {
     margin-left: 20px;
 }
+
+.errorHintButton:global(.el-button){
+    margin-right: 5px;
+}
