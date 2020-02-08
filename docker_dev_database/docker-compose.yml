@@ -1,0 +1,16 @@
+version: '3.4'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: '8pM6oDOgbkyxuMH9'
+      POSTGRES_DB: 'dockerdemo_development'
+    
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - /srv/docker/postgresql:/var/lib/postgresql
