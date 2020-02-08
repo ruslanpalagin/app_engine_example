@@ -7,9 +7,13 @@ const formsWithRules = {
             email: "email@example.com",
             password: "foobar",
         },
-        rules: {
-            email: ["required", "isEmail"],
-            password: ["required"],
+        rulesProps: {
+            email: {
+                rules: ["required", "isEmail"],
+            },
+            password: {
+                rules: ["required"]
+            },
         }
     },
     simpleWithErrors: {
@@ -17,61 +21,75 @@ const formsWithRules = {
             email: "email@example.com",
             password: "",
         },
-        rules: {
-            email: ["required", "isEmail"],
-            password: ["required"]
+        rulesProps: {
+            email: {
+                rules: ["required", "isEmail"],
+            },
+            password: {
+                rules: ["required"]
+            },
         }
     },
-    multiple: {
+    simpleWithCustomMessages: {
         form: {
-            users: [ { name: "foo" }, { name: "bar" } ],
-            orders: [
-                { orderNumber: "123" },
-                { orderNumber: "135" },
-            ]
+            email: "email@example.com",
+            password: "foobar",
         },
-        rules: {
-            users: [formValidator.hasMany({ name: ["required"] })],
-            orders: [formValidator.hasMany({ orderNumber: ["isNumeric"] })]
+        rulesProps: {
+            email: {
+                rules: ["required", "isEmail"],
+                customMessage: 'Please enter the email',
+            },
+            password: {
+                rules: ["required"],
+                customMessage: 'Please enter the password',
+            },
         }
     },
-    multipleWithErrors: {
+    simpleWithCustomMessagesWithErrors: {
         form: {
-            users: [ { name: "foo" }, { name: "" } ],
-            orders: [
-                { orderNumber: "123" },
-                { orderNumber: "baz" },
-            ]
+            email: "",
+            password: "",
         },
-        rules: {
-            users: [formValidator.hasMany({ name: ["required"] })],
-            orders: [formValidator.hasMany({ orderNumber: ["isNumeric"] })]
+        rulesProps: {
+            email: {
+                rules: ["required", "isEmail"],
+                customMessage: 'Please enter the email',
+            },
+            password: {
+                rules: ["length:2"],
+                customMessage: 'Please enter the password',
+            },
         }
-    }
+    },
 };
 
 describe("FormValidator", () => {
     describe("isValid method", () => {
 
-        it("should return object without errors", () => {
+        it("should return object without fieldsErrors", () => {
             const form = formsWithRules.simple.form;
-            const rules = formsWithRules.simple.rules;
+            const rulesProps = formsWithRules.simple.rulesProps;
             const expectedValidationObject = {
                 isValid: true,
-                errors: {},
+                fieldsErrors: {},
+                errorsMessages: {},
                 errorsArray: [],
             };
 
-            const validationObject = formValidator.isValid(form, rules);
+            const validationObject = formValidator.isValid(form, rulesProps);
 
             expect(validationObject).toEqual(expectedValidationObject);
         });
 
-        it("should return validation errors", () => {
+        it("should return validation fieldsErrors", () => {
             const form = formsWithRules.simpleWithErrors.form;
-            const rules = formsWithRules.simpleWithErrors.rules;
+            const rulesProps = formsWithRules.simpleWithErrors.rulesProps;
             const expectedValidationObject = {
-                errors: {
+                errorsMessages: {
+                    password: ["Required"],
+                },
+                fieldsErrors: {
                     password: ["Required"],
                 },
                 errorsArray: [{
@@ -81,54 +99,56 @@ describe("FormValidator", () => {
                 isValid: false
             };
 
-            const validationObject = formValidator.isValid(form, rules);
+            const validationObject = formValidator.isValid(form, rulesProps);
 
             expect(validationObject).toEqual(expectedValidationObject);
         });
 
-    });
-
-    describe("hasMany method", () => {
-        it("should validate multiple fields", () => {
-            const form = formsWithRules.multiple.form;
-            const rules = formsWithRules.multiple.rules;
+        it("should return object without fieldsErrors", () => {
+            const form = formsWithRules.simpleWithCustomMessages.form;
+            const rulesProps = formsWithRules.simpleWithCustomMessages.rulesProps;
             const expectedValidationObject = {
                 isValid: true,
-                errors: {},
+                fieldsErrors: {},
+                errorsMessages: {},
                 errorsArray: [],
             };
 
-            const validationObject = formValidator.isValid(form, rules);
+            const validationObject = formValidator.isValid(form, rulesProps);
 
             expect(validationObject).toEqual(expectedValidationObject);
         });
 
-        it("should validate multiple fields and return error", () => {
-            const form = formsWithRules.multipleWithErrors.form;
-            const rules = formsWithRules.multipleWithErrors.rules;
+        it("should return validation fieldsErrors", () => {
+            const form = formsWithRules.simpleWithCustomMessagesWithErrors.form;
+            const rulesProps = formsWithRules.simpleWithCustomMessagesWithErrors.rulesProps;
             const expectedValidationObject = {
-                errors: {
-                    "orders[1].orderNumber": [
-                        "Should be a number"
-                    ],
-                    "users[1].name": [
-                        "Required"
-                    ]
+                errorsMessages: {
+                    email: ["Please enter the email"],
+                    password: ["Please enter the password"],
+                },
+                fieldsErrors: {
+                    email: ["Required", "Invalid email address"],
+                    password: ["Minimum 2 symbols required"],
                 },
                 errorsArray: [
                     {
-                        "field": "users[1].name",
-                        "message": "Required"
+                        field: "email",
+                        message: "Required",
                     },
                     {
-                        "field": "orders[1].orderNumber",
-                        "message": "Should be a number"
-                    }
+                        field: "email",
+                        message: "Invalid email address",
+                    },
+                    {
+                        field: "password",
+                        message: "Minimum 2 symbols required",
+                    },
                 ],
                 isValid: false
             };
-
-            const validationObject = formValidator.isValid(form, rules);
+            
+            const validationObject = formValidator.isValid(form, rulesProps);
 
             expect(validationObject).toEqual(expectedValidationObject);
         });
