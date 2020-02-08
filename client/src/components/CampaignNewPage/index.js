@@ -18,6 +18,11 @@ import HTMLStringRenderer from '../HTMLStringRenderer';
 import ReactFileReader from 'react-file-reader';
 import 'element-theme-default';
 
+
+// import { Editor } from 'react-draft-wysiwyg';
+// import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+
+
 const { convertCSVToArray } = require('convert-csv-to-array');
 
 const receiversTableColumns = [
@@ -242,6 +247,10 @@ class CampaignNewPage extends React.Component {
             });
     }
 
+    onEditorStateChange = (e) => {
+        console.log('onEditorStateChange', e);
+    }
+
     render() {
         const { errors, touched } = this.state;
         const { contactsData, html, subject, smtpPassword, smtpLogin } = this.state.fields;
@@ -324,6 +333,14 @@ class CampaignNewPage extends React.Component {
                             </FormGroup>
                         </Col>
                     </Row>
+{/* 
+                    <Editor
+                        // editorState={editorState}
+                        toolbarClassName="toolbarClassName"
+                        wrapperClassName="wrapperClassName"
+                        editorClassName="editorClassName"
+                        onEditorStateChange={this.onEditorStateChange}
+                    /> */}
 
                     {
                         contactsData.length > 0 &&
