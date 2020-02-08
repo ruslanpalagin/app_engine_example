@@ -12,7 +12,7 @@ import {
     Table,
     Message,
     MessageBox,
-    Tooltip,
+    Popover,
 } from 'element-react';
 import HTMLStringRenderer from '../HTMLStringRenderer';
 import ReactFileReader from 'react-file-reader';
@@ -35,9 +35,19 @@ const receiversTableColumns = [
         label: "",
         render: () => (
             <span>
-                <Tooltip content="Send to yourself or your manager to test before sending to recipient." placement="top">
+                <Popover
+                    content={
+                        <div>
+                            Send to yourself or<br/>
+                            your manager to test<br/>
+                            before sending to recipient
+                        </div>
+                    }
+                    opasity="0.5"
+                    placement="left"
+                    trigger="hover">
                     <Button plain={true} type="info" size="small">Test Email</Button>
-                </Tooltip>
+                </Popover>
             </span>
         )
     }
