@@ -12,7 +12,7 @@ const getIsGoogleTokenValid = async ({apiKey, accessToken}) => {
     return response.data.labels && response.data.labels.length > 0;
 };
 
-const apiKey = "AIzaSyD9VMwM0Iw0Nw_ymQKqEvACdAqWKPWq1is";
+const apiKey = "AIzaSyCcyaCHMPFkpdFlqjs4RDxg_9TdJcafO_I";
 
 const auth = {
     async isValidApiToken(apiToken){
