@@ -57,11 +57,24 @@ const campaignFactory = {
 };
 
 const campaignSchema = {
-    contactsData: ["arrayLength:1"],
-    html: ["required"],
-    subject: ["required"],
-    smtpLogin: ["required"],
-    smtpPassword: ["required"],
+    contactsData: {
+        rules: ["arrayLength:1"],
+        customMessage: 'Please add receivers list',
+    },
+    html: {
+        rules: ["required"],
+        customMessage: 'Please choose template .html file',
+    },
+    subject: {
+        rules: ["length:3"],
+        customMessage: 'Please enter email subject (3 characters minimum)',
+    },
+    smtpLogin: {
+        rules: ["isEmail"],
+    },
+    smtpPassword: {
+        rules: ["required"],
+    },
 };
 const MESSAGE_TIMEOUT = 4000;
 
@@ -69,10 +82,11 @@ class CampaignNewPage extends React.Component {
     constructor(props) {
         super(props);
         const fields = campaignFactory.create({ smtpLogin: auth.getUser() ? auth.getUser().email : "" });
-        const { errors } = formValidator.isValid(fields, campaignSchema);
+        const { fieldsErrors, errorsMessages } = formValidator.isValid(fields, campaignSchema);
         this.state = {
             fields,
-            errors,
+            fieldsErrors,
+            errorsMessages,
             touched: {},
         };
     }
@@ -80,10 +94,11 @@ class CampaignNewPage extends React.Component {
     setField = (name, value) => {
         this.setState((state) => {
             const fields = {...state.fields, [name]: value};
-            const { errors } = formValidator.isValid(fields, campaignSchema);
+            const { fieldsErrors, errorsMessages } = formValidator.isValid(fields, campaignSchema);
             return {
                 fields,
-                errors,
+                fieldsErrors,
+                errorsMessages,
             };
         });
     };
@@ -131,18 +146,19 @@ class CampaignNewPage extends React.Component {
     clearFields = () => {
         this.setState(() => {
             const fields = campaignFactory.create();
-            const { errors } = formValidator.isValid(fields, campaignSchema);
+            const { fieldsErrors, errorsMessages } = formValidator.isValid(fields, campaignSchema);
             return {
                 fields,
-                errors,
+                fieldsErrors,
+                errorsMessages,
                 touched: {},
             };
         });
     };
 
     canSubmit = () => {
-        const { errors } = this.state;
-        return !formValidator.isObjectHasErrors(errors);
+        const { fieldsErrors } = this.state;
+        return !formValidator.isObjectHasErrors(fieldsErrors);
     };
 
     touchAllFields = () => {
@@ -202,7 +218,7 @@ class CampaignNewPage extends React.Component {
                 confirmButtonText: 'Send',
                 cancelButtonText: 'Cancel',
                 inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-                inputErrorMessage: 'Invalid Email',
+                inputErrorsMessages: 'Invalid Email',
                 inputValue: auth.getUser().email,
             }).then(({ value }) => {
                 this.postTestEmail(value, item)
@@ -243,7 +259,7 @@ class CampaignNewPage extends React.Component {
     }
 
     render() {
-        const { errors, touched } = this.state;
+        const { errorsMessages, touched } = this.state;
         const { contactsData, html, subject, smtpPassword, smtpLogin } = this.state.fields;
 
         return (
@@ -260,8 +276,8 @@ class CampaignNewPage extends React.Component {
                                        onBlur={() => this.onTouch("subject")}
                                 />
                                 {
-                                    touched.subject && errors.subject &&
-                                    <span className={styles.validationError}>{errors.subject}</span>
+                                    touched.subject && errorsMessages.subject &&
+                                    <span className={styles.validationError}>{errorsMessages.subject}</span>
                                 }
                             </FormGroup>
                             <FormGroup>
@@ -274,8 +290,8 @@ class CampaignNewPage extends React.Component {
                                     </ReactFileReader>
                                     <a className={styles.uploadRow__example} href={url.publicDir("/emails4.csv")} target="_blank">Download an example file</a>
                                     {
-                                        touched.contactsData && errors.contactsData &&
-                                        <span className={styles.validationError}>{errors.contactsData}</span>
+                                        touched.contactsData && errorsMessages.contactsData &&
+                                        <span className={styles.validationError}>{errorsMessages.contactsData}</span>
                                     }
                                 </div>
                             </FormGroup>
@@ -290,8 +306,8 @@ class CampaignNewPage extends React.Component {
                                     <a className={styles.uploadRow__example} href={url.publicDir("/template1.html.txt")} target="_blank">Download an example file</a>
                                 </div>
                                 {
-                                    touched.html && errors.html &&
-                                    <span className={styles.validationError}>{errors.html}</span>
+                                    touched.html && errorsMessages.html &&
+                                    <span className={styles.validationError}>{errorsMessages.html}</span>
                                 }
                             </FormGroup>
                         </Col>
@@ -305,8 +321,8 @@ class CampaignNewPage extends React.Component {
                                        onBlur={() => this.onTouch("smtpLogin")}
                                 />
                                 {
-                                    touched.smtpLogin && errors.smtpLogin &&
-                                    <span className={styles.validationError}>{errors.smtpLogin}</span>
+                                    touched.smtpLogin && errorsMessages.smtpLogin &&
+                                    <span className={styles.validationError}>{errorsMessages.smtpLogin}</span>
                                 }
                             </FormGroup>
                             <FormGroup>
@@ -318,8 +334,8 @@ class CampaignNewPage extends React.Component {
                                        onBlur={() => this.onTouch("smtpPassword")}
                                 />
                                 {
-                                    touched.smtpPassword && errors.smtpPassword &&
-                                    <span className={styles.validationError}>{errors.smtpPassword}</span>
+                                    touched.smtpPassword && errorsMessages.smtpPassword &&
+                                    <span className={styles.validationError}>{errorsMessages.smtpPassword}</span>
                                 }
                             </FormGroup>
                         </Col>
